@@ -1,0 +1,22 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../../src/Dynamics/Body.cs">
+    <Files>
+      <File FileName="../../src/Collision/BroadPhase.cs" Line="55" Column="26" />
+      <File FileName="../../src/Collision/TODO.txt" Line="1" Column="1" />
+      <File FileName="../../src/Common/Mat22.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Mat33.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Math.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Settings.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Sweep.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Vec2.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/Vec3.cs" Line="1" Column="1" />
+      <File FileName="../../src/Common/XForm.cs" Line="1" Column="1" />
+      <File FileName="../../src/Dynamics/Body.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

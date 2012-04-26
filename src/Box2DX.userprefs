@@ -1,0 +1,27 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Dynamics/Fixture.cs">
+    <Files>
+      <File FileName="Box2DXDebug.cs" Line="1" Column="1" />
+      <File FileName="Properties/AssemblyInfo.cs" Line="1" Column="1" />
+      <File FileName="Collision/TODO.txt" Line="1" Column="1" />
+      <File FileName="Common/Mat33.cs" Line="1" Column="1" />
+      <File FileName="Common/Math.cs" Line="1" Column="1" />
+      <File FileName="Common/Settings.cs" Line="1" Column="1" />
+      <File FileName="Common/Sweep.cs" Line="1" Column="1" />
+      <File FileName="Common/Vec2.cs" Line="1" Column="1" />
+      <File FileName="Common/Vec3.cs" Line="1" Column="1" />
+      <File FileName="Common/XForm.cs" Line="1" Column="1" />
+      <File FileName="Collision/Shapes/CircleShape.cs" Line="1" Column="1" />
+      <File FileName="Collision/Shapes/PolygonShape.cs" Line="1" Column="1" />
+      <File FileName="Collision/Shapes/Shape.cs" Line="1" Column="1" />
+      <File FileName="Collision/Collision.TimeOfImpact.cs" Line="44" Column="9" />
+      <File FileName="Dynamics/Island.cs" Line="1" Column="1" />
+      <File FileName="Dynamics/Fixture.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
