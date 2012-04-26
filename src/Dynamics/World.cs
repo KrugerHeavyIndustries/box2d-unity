@@ -23,6 +23,9 @@ using System;
 
 using Box2DX.Common;
 using Box2DX.Collision;
+using UnityEngine;
+
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -64,11 +67,11 @@ namespace Box2DX.Dynamics
 		private int _jointCount;
 		private int _controllerCount;
 
-		private Vec2 _gravity;
+		private Vector2 _gravity;
 		/// <summary>
 		/// Get\Set global gravity vector.
 		/// </summary>
-		public Vec2 Gravity { get { return _gravity; } set { _gravity = value; } }
+		public Vector2 Gravity { get { return _gravity; } set { _gravity = value; } }
 
 		private bool _allowSleep;
 
@@ -1230,7 +1233,7 @@ namespace Box2DX.Dynamics
 			}
 		}
 
-		private void DrawFixture(Fixture fixture, XForm xf, Color color, bool core)
+		private void DrawFixture(Fixture fixture, Transform xf, Color color, bool core)
 		{
 #warning "the core argument is not used, the coreColor variable is also not used"
 			Color coreColor = new Color(0.9f, 0.6f, 0.6f);

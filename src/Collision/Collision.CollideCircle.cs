@@ -22,6 +22,8 @@
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	public partial class Collision

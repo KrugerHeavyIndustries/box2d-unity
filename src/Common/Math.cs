@@ -28,22 +28,23 @@ using Random = UnityEngine.Random;
 
 namespace Box2DX.Common
 {
-	public static class TransformExtension { 
-		
-		public static Vector2 TransformPoint(this Transform transform, Vector2 p)
-		{
-			var p3 = transform.TransformPoint(new Vector3(p.x, p.y, 0.0f));
-			return new Vector2(p3.x, p3.y);
-		}
-		
-		public static Vector2 TransformDirection(this Transform transform, Vector2 p) 
-		{ 
-			var p3 = transform.TransformDirection(new Vector3(p.x, p.y, 0.0f));
-			return new Vector2(p3.x, p3.y);
-		}
-	}
 	
-	public static class Vector2Extension {
+	public static class Vector2Extension 
+	{	
+		public static Vector3 ToVector3(this Vector2 vector) 
+		{ 
+			return new Vector3(vector.x, vector.y, 0.0f);
+		}
+		
+		public static bool IsValid(this Vector2 vector)
+		{
+			return Math.IsValid(vector.x) && Math.IsValid(vector.y);
+		}
+		
+		public static float Cross(this Vector2 vector, Vector2 other) 
+		{ 
+			return vector.x * other.y - vector.y * other.x;
+		}
 		
 		public static Vector2 CrossScalarPostMultiply(this Vector2 vector, float s) 
 		{ 
@@ -54,8 +55,20 @@ namespace Box2DX.Common
 		{
 			return new Vector2(-s * vector.y, s * vector.x);
 		}
+		
+		public static Vector2 Abs(this Vector2 vector) { 
+			return new Vector2(Mathf.Abs(vector.x), Mathf.Abs(vector.y));
+		}
 	}
 	
+	public static class Vector3Extension 
+	{ 
+		public static Vector2 ToVector2(this Vector3 vector) 
+		{
+			return new Vector2(vector.x, vector.y);
+		}
+	}
+
 	public class Math
 	{
 		public static readonly ushort USHRT_MAX = 0xffff;
@@ -101,27 +114,10 @@ namespace Box2DX.Common
 		}
 
 		private static Random s_rnd = new Random();
-		/// <summary>
-		/// Random number in range [-1,1]
-		/// </summary>
-		public static float Random()
-		{
-			float r = (float)(s_rnd.Next() & RAND_LIMIT);
-			r /= RAND_LIMIT;
-			r = 2.0f * r - 1.0f;
-			return r;
-		}
-
+		
 		/// <summary>
 		/// Random floating point number in range [lo, hi]
 		/// </summary>
-		public static float Random(float lo, float hi)
-		{
-			float r = (float)(s_rnd.Next() & RAND_LIMIT);
-			r /= RAND_LIMIT;
-			r = (hi - lo) * r + lo;
-			return r;		
-		}
 
 		/// <summary>
 		/// "Next Largest Power of 2
@@ -175,12 +171,9 @@ namespace Box2DX.Common
 			return a < b ? a : b;
 		}
 
-		public static Vec2 Min(Vec2 a, Vec2 b)
+		public static Vector2 Min(Vector2 a, Vector2 b)
 		{
-			Vec2 c = new Vec2();
-			c.X = Math.Min(a.X, b.X);
-			c.Y = Math.Min(a.Y, b.Y);
-			return c;
+			return new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
 		}
 
 		public static float Max(float a, float b)
@@ -193,12 +186,9 @@ namespace Box2DX.Common
 			return a > b ? a : b;
 		}
 
-		public static Vec2 Max(Vec2 a, Vec2 b)
+		public static Vector2 Max(Vector2 a, Vector2 b)
 		{
-			Vec2 c = new Vec2();
-			c.X = Math.Max(a.X, b.X);
-			c.Y = Math.Max(a.Y, b.Y);
-			return c;
+			return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
 		}
 
 		public static float Clamp(float a, float low, float high)
@@ -211,7 +201,7 @@ namespace Box2DX.Common
 			return Math.Max(low, Math.Min(a, high));
 		}
 
-		public static Vec2 Clamp(Vec2 a, Vec2 low, Vec2 high)
+		public static Vector2 Clamp(Vector2 a, Vector2 low, Vector2 high)
 		{
 			return Math.Max(low, Math.Min(a, high));
 		}
@@ -268,7 +258,8 @@ namespace Box2DX.Common
 			C.Set(c1, c2);
 			return C;
 		}
-
+		
+		/*
 		public static Vec2 Mul(XForm T, Vec2 v)
 		{
 			return T.Position + Math.Mul(T.R, v);
@@ -278,6 +269,7 @@ namespace Box2DX.Common
 		{
 			return Math.MulT(T.R, v - T.Position);
 		}
+		*/
 
 		/// <summary>
 		/// Multiply a matrix times a vector.

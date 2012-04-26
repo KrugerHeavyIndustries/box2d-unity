@@ -18,6 +18,8 @@
 
 using Box2DX.Common;
 
+using UnityEngine;
+
 namespace Box2DX.Dynamics.Controllers
 {
 
@@ -81,7 +83,7 @@ namespace Box2DX.Dynamics.Controllers
                 if (body.IsSleeping())
                     continue;
 
-                Vec2 damping = body.GetWorldVector(Math.Mul(T, body.GetLocalVector(body.GetLinearVelocity())));
+                Vector2 damping = body.GetWorldVector(T.Multiply(body.GetLocalVector(body.GetLinearVelocity())));
                 body.SetLinearVelocity(body.GetLinearVelocity() + timestep*damping);
             }
         }

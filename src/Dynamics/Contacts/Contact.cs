@@ -23,6 +23,10 @@ using System;
 using Box2DX.Collision;
 using Box2DX.Common;
 
+using UnityEngine;
+
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Dynamics
 {
 	public delegate Contact ContactCreateFcn(Fixture fixtureA, Fixture fixtureB);
@@ -101,7 +105,7 @@ namespace Box2DX.Dynamics
 		public float _toi;
 
 		internal delegate void CollideShapeDelegate(
-			ref Manifold manifold, Shape circle1, XForm xf1, Shape circle2, XForm xf2);
+			ref Manifold manifold, Shape circle1, Transform xf1, Shape circle2, Transform xf2);
 		internal CollideShapeDelegate CollideShapeFunction;
 
 		public Contact(){}

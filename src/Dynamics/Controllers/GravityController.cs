@@ -19,6 +19,8 @@
 using Box2DX.Common;
 using Math = Box2DX.Common.Math;
 
+using UnityEngine;
+
 namespace Box2DX.Dynamics.Controllers
 {
     /// This class is used to build gravity controllers
@@ -62,12 +64,12 @@ namespace Box2DX.Dynamics.Controllers
                     for (ControllerEdge j = _bodyList; j != i; j = j.nextBody)
                     {
                         Body body2 = j.body;
-                        Vec2 d = body2.GetWorldCenter() - body1.GetWorldCenter();
-                        float r2 = d.LengthSquared();
+                        Vector2 d = body2.GetWorldCenter() - body1.GetWorldCenter();
+                        float r2 = d.sqrMagnitude;
                         if (r2 < Settings.FLT_EPSILON)
                             continue;
 
-                        Vec2 f = G / r2 / Math.Sqrt(r2) * body1.GetMass() * body2.GetMass() * d;
+                        Vector2 f = G / r2 / Math.Sqrt(r2) * body1.GetMass() * body2.GetMass() * d;
                         body1.ApplyForce(f, body1.GetWorldCenter());
                         body2.ApplyForce(-1.0f * f, body2.GetWorldCenter());
                     }
@@ -81,11 +83,11 @@ namespace Box2DX.Dynamics.Controllers
                     for (ControllerEdge j = _bodyList; j != i; j = j.nextBody)
                     {
                         Body body2 = j.body;
-                        Vec2 d = body2.GetWorldCenter() - body1.GetWorldCenter();
-                        float r2 = d.LengthSquared();
+                        Vector2 d = body2.GetWorldCenter() - body1.GetWorldCenter();
+                        float r2 = d.sqrMagnitude;
                         if (r2 < Settings.FLT_EPSILON)
                             continue;
-                        Vec2 f = G / r2 * body1.GetMass() * body2.GetMass() * d;
+                        Vector2 f = G / r2 * body1.GetMass() * body2.GetMass() * d;
                         body1.ApplyForce(f, body1.GetWorldCenter());
                         body2.ApplyForce(-1.0f * f, body2.GetWorldCenter());
                     }

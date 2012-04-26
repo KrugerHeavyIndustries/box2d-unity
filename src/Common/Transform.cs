@@ -19,8 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-//r175
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -29,41 +27,53 @@ using UnityEngine;
 
 namespace Box2DX.Common
 {
-	public struct Sweep
+	/// <summary>
+	/// A transform contains translation and rotation.
+	/// It is used to represent the position and orientation of rigid frames.
+	/// </summary>
+	public struct Transform
 	{
-		public Vector2 LocalCenter;	//local center of mass position
-		public Vector2 C0, C; //local center of mass position
-		public float A0, A; //world angles
-		public float T0; //time interval = [T0,1], where T0 is in [0,1]
+		public Vector2 position;
+		public Quaternion rotation;
 
 		/// <summary>
-		/// Get the interpolated transform at a specific time.
+		/// Initialize using a position vector and a rotation matrix.
 		/// </summary>
-		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
-		public void GetTransform(out Transform xf, float alpha)
+		/// <param name="position"></param>
+		/// <param name="R"></param>
+		public Transform(Vector2 position, Quaternion rotation)
 		{
-			xf = new Transform();
-			xf.position = (1.0f - alpha) * C0 + alpha * C;
-			float angle = (1.0f - alpha) * A0 + alpha * A;
-			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Deg2Rad, Vector3.forward);
-
-			// Shift to origin
-			xf.position -= xf.TransformDirection(LocalCenter);
+			this.position = position;
+			this.rotation = rotation;
 		}
 
 		/// <summary>
-		/// Advance the sweep forward, yielding a new initial state.
+		/// Set this to the identity transform.
 		/// </summary>
-		/// <param name="t">The new initial time.</param>
-		public void Advance(float t)
+		public void SetIdentity()
 		{
-			if (T0 < t && 1.0f - T0 > Settings.FLT_EPSILON)
-			{
-				float alpha = (t - T0) / (1.0f - T0);
-				C0 = (1.0f - alpha) * C0 + alpha * C;
-				A0 = (1.0f - alpha) * A0 + alpha * A;
-				T0 = t;
-			}
+			position = Vector2.zero;
+			rotation = Quaternion.identity;
+		}
+		
+		public Vector2 InverseTransformPoint(Vector2 p) 
+		{
+			return Vector2.zero;
+		}
+		
+		public Vector2 InverseTransformDirection(Vector2 d)
+		{
+			return Vector2.zero;
+		}
+		
+		public Vector2 TransformPoint(Vector2 p)
+		{	
+			return rotation * p.ToVector3();
+		}
+		
+		public Vector2 TransformDirection(Vector2 d) 
+		{ 
+			return Vector2.zero;
 		}
 	}
 }

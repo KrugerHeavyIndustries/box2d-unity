@@ -144,17 +144,19 @@ using System.Text;
 using Box2DX.Common;
 using Box2DX.Collision;
 
+using UnityEngine;
+
 namespace Box2DX.Dynamics
 {
 	public struct Position
 	{
-		public Vec2 x;
+		public Vector2 x;
 		public float a;
 	}
 
 	public struct Velocity
 	{
-		public Vec2 v;
+		public Vector2 v;
 		public float w;
 	}
 
@@ -215,7 +217,7 @@ namespace Box2DX.Dynamics
 			_jointCount = 0;
 		}
 
-		public void Solve(TimeStep step, Vec2 gravity, bool allowSleep)
+		public void Solve(TimeStep step, Vector2 gravity, bool allowSleep)
 		{
 			// Integrate velocities and apply damping.
 			for (int i = 0; i < _bodyCount; ++i)
@@ -230,7 +232,7 @@ namespace Box2DX.Dynamics
 				b._angularVelocity += step.Dt * b._invI * b._torque;
 
 				// Reset forces.
-				b._force.Set(0.0f, 0.0f);
+				b._force = Vector2.zero;
 				b._torque = 0.0f;
 
 				// Apply damping.
@@ -276,8 +278,8 @@ namespace Box2DX.Dynamics
 					continue;
 
 				// Check for large velocities.
-				Vec2 translation = step.Dt * b._linearVelocity;
-				if (Common.Vec2.Dot(translation, translation) > Settings.MaxTranslationSquared)
+				Vector2 translation = step.Dt * b._linearVelocity;
+				if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
 				{
 					translation.Normalize();
 					b._linearVelocity = (Settings.MaxTranslation * step.Inv_Dt) * translation;
@@ -361,7 +363,7 @@ namespace Box2DX.Dynamics
 						Common.Math.Abs(b._linearVelocity.Y) > Settings.LinearSleepTolerance)
 #else
  b._angularVelocity * b._angularVelocity > angTolSqr ||
-						Vec2.Dot(b._linearVelocity, b._linearVelocity) > linTolSqr)
+						Vector2.Dot(b._linearVelocity, b._linearVelocity) > linTolSqr)
 #endif
 					{
 						b._sleepTime = 0.0f;
@@ -380,7 +382,7 @@ namespace Box2DX.Dynamics
 					{
 						Body b = _bodies[i];
 						b._flags |= Body.BodyFlags.Sleep;
-						b._linearVelocity = Vec2.Zero;
+						b._linearVelocity = Vector2.zero;
 						b._angularVelocity = 0.0f;
 					}
 				}
@@ -423,8 +425,8 @@ namespace Box2DX.Dynamics
 					continue;
 
 				// Check for large velocities.
-				Vec2 translation = subStep.Dt * b._linearVelocity;
-				if (Vec2.Dot(translation, translation) > Settings.MaxTranslationSquared)
+				Vector2 translation = subStep.Dt * b._linearVelocity;
+				if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
 				{
 					translation.Normalize();
 					b._linearVelocity = (Settings.MaxTranslation * subStep.Inv_Dt) * translation;

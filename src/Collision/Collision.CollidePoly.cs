@@ -22,6 +22,8 @@
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	public partial class Collision
@@ -298,7 +300,7 @@ namespace Box2DX.Collision
 				if (separation <= totalRadius)
 				{
 					ManifoldPoint cp = manifold.Points[pointCount];
-					cp.LocalPoint = Common.Math.MulT(xf2, clipPoints2[i].V);
+					cp.LocalPoint = xf2.TransformDirection(clipPoints2[i].V);//Common.Math.MulT(xf2, clipPoints2[i].V);
 					cp.ID = clipPoints2[i].ID;
 					cp.ID.Features.Flip = flip;
 					++pointCount;

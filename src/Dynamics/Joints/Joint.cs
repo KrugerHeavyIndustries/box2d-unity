@@ -24,6 +24,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using Box2DX.Common;
+using UnityEngine;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -49,26 +51,28 @@ namespace Box2DX.Dynamics
 
 	public struct Jacobian
 	{
-		public Vec2 Linear1;
+		public Vector2 Linear1;
 		public float Angular1;
-		public Vec2 Linear2;
+		public Vector2 Linear2;
 		public float Angular2;
 
 		public void SetZero()
 		{
-			Linear1.SetZero(); Angular1 = 0.0f;
-			Linear2.SetZero(); Angular2 = 0.0f;
+			Linear1 = Vector2.zero;
+			Angular1 = 0.0f;
+			Linear2 = Vector2.zero;
+			Angular2 = 0.0f;
 		}
 
-		public void Set(Vec2 x1, float a1, Vec2 x2, float a2)
+		public void Set(Vector2 x1, float a1, Vector2 x2, float a2)
 		{
 			Linear1 = x1; Angular1 = a1;
 			Linear2 = x2; Angular2 = a2;
 		}
 
-		public float Compute(Vec2 x1, float a1, Vec2 x2, float a2)
+		public float Compute(Vector2 x1, float a1, Vector2 x2, float a2)
 		{
-			return Vec2.Dot(Linear1, x1) + Angular1 * a1 + Vec2.Dot(Linear2, x2) + Angular2 * a2;
+			return Vector2.Dot(Linear1, x1) + Angular1 * a1 + Vector2.Dot(Linear2, x2) + Angular2 * a2;
 		}
 	}
 
@@ -164,7 +168,7 @@ namespace Box2DX.Dynamics
 		protected object _userData;
 
 		// Cache here per time step to reduce cache misses.
-		protected Vec2 _localCenter1, _localCenter2;
+		protected Vector2 _localCenter1, _localCenter2;
 		protected float _invMass1, _invI1;
 		protected float _invMass2, _invI2;
 
@@ -198,18 +202,18 @@ namespace Box2DX.Dynamics
 		/// Get the anchor point on body1 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vec2 Anchor1 { get; }
+		public abstract Vector2 Anchor1 { get; }
 
 		/// <summary>
 		/// Get the anchor point on body2 in world coordinates.
 		/// </summary>
 		/// <returns></returns>
-		public abstract Vec2 Anchor2 { get; }
+		public abstract Vector2 Anchor2 { get; }
 
 		/// <summary>
 		/// Get the reaction force on body2 at the joint anchor.
 		/// </summary>		
-		public abstract Vec2 GetReactionForce(float inv_dt);
+		public abstract Vector2 GetReactionForce(float inv_dt);
 
 		/// <summary>
 		/// Get the reaction torque on body2.
@@ -307,10 +311,10 @@ namespace Box2DX.Dynamics
 		// This returns true if the position errors are within tolerance.
 		internal abstract bool SolvePositionConstraints(float baumgarte);
 
-		internal void ComputeXForm(ref XForm xf, Vec2 center, Vec2 localCenter, float angle)
+		internal void ComputeTransform(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.R.Set(angle);
-			xf.Position = center - Box2DX.Common.Math.Mul(xf.R, localCenter);
+			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward);
+			xf.position = center - xf.TransformDirection(localCenter);
 		}
 	}
 }

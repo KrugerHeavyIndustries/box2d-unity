@@ -24,6 +24,9 @@ using System;
 using Box2DX.Common;
 using Box2DX.Collision;
 
+using UnityEngine;
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Dynamics
 {
 	/// <summary>
@@ -229,12 +232,12 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Draw a line segment.
 		/// </summary>
-		public abstract void DrawSegment(Vec2 p1, Vec2 p2, Color color);
+		public abstract void DrawSegment(Vector2 p1, Vector2 p2, Color color);
 
 		/// <summary>
 		/// Draw a transform. Choose your own length scale.
 		/// </summary>
 		/// <param name="xf">A transform.</param>
-		public abstract void DrawXForm(XForm xf);
+		public abstract void DrawXForm(Transform xf);
 	}
 }

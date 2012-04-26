@@ -23,6 +23,8 @@ using System;
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	// Structures and functions used for computing contact points, distance
@@ -34,14 +36,14 @@ namespace Box2DX.Collision
 
 		public static bool TestOverlap(AABB a, AABB b)
 		{
-			Vec2 d1, d2;
+			Vector2 d1, d2;
 			d1 = b.LowerBound - a.UpperBound;
 			d2 = a.LowerBound - b.UpperBound;
 
-			if (d1.X > 0.0f || d1.Y > 0.0f)
+			if (d1.x > 0.0f || d1.y > 0.0f)
 				return false;
 
-			if (d2.X > 0.0f || d2.Y > 0.0f)
+			if (d2.x > 0.0f || d2.y > 0.0f)
 				return false;
 
 			return true;
@@ -104,8 +106,8 @@ namespace Box2DX.Collision
 			int numOut = 0;
 
 			// Calculate the distance of end points to the line
-			float distance0 = Vec2.Dot(normal, vIn[0].V) - offset;
-			float distance1 = Vec2.Dot(normal, vIn[1].V) - offset;
+			float distance0 = Vector2.Dot(normal, vIn[0].V) - offset;
+			float distance1 = Vector2.Dot(normal, vIn[1].V) - offset;
 
 			// If the points are behind the plane
 			if (distance0 <= 0.0f) vOut[numOut++] = vIn[0];
@@ -297,29 +299,29 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Ray cast against this segment with another segment.        
 		/// </summary>
-		public bool TestSegment(out float lambda, out Vec2 normal, Segment segment, float maxLambda)
+		public bool TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			lambda = 0f;
-			normal = new Vec2();
+			normal = new Vector2();
 
-			Vec2 s = segment.P1;
-			Vec2 r = segment.P2 - s;
-			Vec2 d = P2 - P1;
-			Vec2 n = Vec2.Cross(d, 1.0f);
+			Vector2 s = segment.P1;
+			Vector2 r = segment.P2 - s;
+			Vector2 d = P2 - P1;
+			Vector2 n = d.CrossScalarPostMultiply(1.0f);
 
 			float k_slop = 100.0f * Common.Settings.FLT_EPSILON;
-			float denom = -Vec2.Dot(r, n);
+			float denom = -Vector2.Dot(r, n);
 
 			// Cull back facing collision and ignore parallel segments.
 			if (denom > k_slop)
 			{
 				// Does the segment intersect the infinite line associated with this segment?
-				Vec2 b = s - P1;
-				float a = Vec2.Dot(b, n);
+				Vector2 b = s - P1;
+				float a = Vector2.Dot(b, n);
 
 				if (0.0f <= a && a <= maxLambda * denom)
 				{
-					float mu2 = -r.X * b.Y + r.Y * b.X;
+					float mu2 = -r.x * b.y + r.y * b.x;
 
 					// Does the segment intersect this segment?
 					if (-k_slop * denom <= mu2 && mu2 <= denom * (1.0f + k_slop))
@@ -339,12 +341,12 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// The starting point.
 		/// </summary>
-		public Vec2 P1;
+		public Vector2 P1;
 
 		/// <summary>
 		/// The ending point.
 		/// </summary>
-		public Vec2 P2;
+		public Vector2 P2;
 	}
 
 	/// <summary>
@@ -355,33 +357,33 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// The lower vertex.
 		/// </summary>
-		public Vec2 LowerBound;
+		public Vector2 LowerBound;
 
 		/// <summary>
 		/// The upper vertex.
 		/// </summary>
-		public Vec2 UpperBound;
+		public Vector2 UpperBound;
 
 		/// Verify that the bounds are sorted.
 		public bool IsValid
 		{
 			get
 			{
-				Vec2 d = UpperBound - LowerBound;
-				bool valid = d.X >= 0.0f && d.Y >= 0.0f;
-				valid = valid && LowerBound.IsValid && UpperBound.IsValid;
+				Vector2 d = UpperBound - LowerBound;
+				bool valid = d.x >= 0.0f && d.y >= 0.0f;
+				valid = valid && LowerBound.IsValid() && UpperBound.IsValid();
 				return valid;
 			}
 		}
 
 		/// Get the center of the AABB.
-		public Vec2 Center
+		public Vector2 Center
 		{
 			get { return 0.5f * (LowerBound + UpperBound); }
 		}
 
 		/// Get the extents of the AABB (half-widths).
-		public Vec2 Extents
+		public Vector2 Extents
 		{
 			get { return 0.5f * (UpperBound - LowerBound); }
 		}
@@ -396,10 +398,10 @@ namespace Box2DX.Collision
 		/// Does this aabb contain the provided AABB.
 		public bool Contains(AABB aabb)
 		{
-			bool result = LowerBound.X <= aabb.LowerBound.X;
-			result = result && LowerBound.Y <= aabb.LowerBound.Y;
-			result = result && aabb.UpperBound.X <= UpperBound.X;
-			result = result && aabb.UpperBound.Y <= UpperBound.Y;
+			bool result = LowerBound.x <= aabb.LowerBound.x;
+			result = result && LowerBound.y <= aabb.LowerBound.y;
+			result = result && aabb.UpperBound.x <= UpperBound.x;
+			result = result && aabb.UpperBound.y <= UpperBound.y;
 			return result;
 		}
 
@@ -415,11 +417,11 @@ namespace Box2DX.Collision
 
 			output.Hit = false;
 
-			Vec2 p = input.P1;
-			Vec2 d = input.P2 - input.P1;
-			Vec2 absD = Common.Math.Abs(d);
+			Vector2 p = input.P1;
+			Vector2 d = input.P2 - input.P1;
+			Vector2 absD = d.Abs();
 
-			Vec2 normal = new Vec2(0);
+			Vector2 normal = new Vector2();
 
 			for (int i = 0; i < 2; ++i)
 			{
@@ -449,7 +451,7 @@ namespace Box2DX.Collision
 					// Push the min up
 					if (t1 > tmin)
 					{
-						normal.SetZero();
+						normal = Vector2.zero;
 						normal[i] = s;
 						tmin = t1;
 					}
@@ -509,11 +511,11 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// World vector pointing from A to B.
 		/// </summary>
-		public Vec2 Normal;
+		public Vector2 Normal;
 		/// <summary>
 		/// World contact point (point of intersection).
 		/// </summary>
-		public Vec2[] Points = new Vec2[Common.Settings.MaxManifoldPoints];
+		public Vector2[] Points = new Vector2[Common.Settings.MaxManifoldPoints];
 
 		public WorldManifold Clone()
 		{
@@ -527,7 +529,7 @@ namespace Box2DX.Collision
 		/// modest motion from the original state. This does not change the
 		/// point count, impulses, etc. The radii must come from the shapes
 		/// that generated the manifold.
-		public void Initialize(Manifold manifold, XForm xfA, float radiusA, XForm xfB, float radiusB)
+		public void Initialize(Manifold manifold, Transform xfA, float radiusA, Transform xfB, float radiusB)
 		{
 			if (manifold.PointCount == 0)
 			{
@@ -538,10 +540,10 @@ namespace Box2DX.Collision
 			{
 				case ManifoldType.Circles:
 					{
-						Vec2 pointA = Common.Math.Mul(xfA, manifold.LocalPoint);
-						Vec2 pointB = Common.Math.Mul(xfB, manifold.Points[0].LocalPoint);
-						Vec2 normal = new Vec2(1.0f, 0.0f);
-						if (Vec2.DistanceSquared(pointA, pointB) > Common.Settings.FLT_EPSILON_SQUARED)
+						Vector2 pointA = xfA.TransformPoint(manifold.LocalPoint);
+						Vector2 pointB = xfB.TransformPoint(manifold.Points[0].LocalPoint);
+						Vector2 normal = new Vector2(1.0f, 0.0f);
+						if ((pointA - pointB).sqrMagnitude > Common.Settings.FLT_EPSILON_SQUARED)
 						{
 							normal = pointB - pointA;
 							normal.Normalize();
@@ -549,25 +551,25 @@ namespace Box2DX.Collision
 
 						Normal = normal;
 
-						Vec2 cA = pointA + radiusA * normal;
-						Vec2 cB = pointB - radiusB * normal;
+						Vector2 cA = pointA + radiusA * normal;
+						Vector2 cB = pointB - radiusB * normal;
 						Points[0] = 0.5f * (cA + cB);
 					}
 					break;
 
 				case ManifoldType.FaceA:
 					{
-						Vec2 normal = Common.Math.Mul(xfA.R, manifold.LocalPlaneNormal);
-						Vec2 planePoint = Common.Math.Mul(xfA, manifold.LocalPoint);
+						Vector2 normal = xfA.TransformDirection(manifold.LocalPlaneNormal);
+						Vector2 planePoint = xfA.TransformPoint(manifold.LocalPoint);
 
 						// Ensure normal points from A to B.
 						Normal = normal;
 
 						for (int i = 0; i < manifold.PointCount; ++i)
 						{
-							Vec2 clipPoint = Common.Math.Mul(xfB, manifold.Points[i].LocalPoint);
-							Vec2 cA = clipPoint + (radiusA - Vec2.Dot(clipPoint - planePoint, normal)) * normal;
-							Vec2 cB = clipPoint - radiusB * normal;
+							Vector2 clipPoint = xfB.TransformPoint(manifold.Points[i].LocalPoint);
+							Vector2 cA = clipPoint + (radiusA - Vector2.Dot(clipPoint - planePoint, normal)) * normal;
+							Vector2 cB = clipPoint - radiusB * normal;
 							Points[i] = 0.5f * (cA + cB);
 						}
 					}
@@ -575,17 +577,17 @@ namespace Box2DX.Collision
 
 				case ManifoldType.FaceB:
 					{
-						Vec2 normal = Common.Math.Mul(xfB.R, manifold.LocalPlaneNormal);
-						Vec2 planePoint = Common.Math.Mul(xfB, manifold.LocalPoint);
+						Vector2 normal = xfB.TransformDirection(manifold.LocalPlaneNormal);
+						Vector2 planePoint = xfB.TransformPoint(manifold.LocalPoint);
 
 						// Ensure normal points from A to B.
 						Normal = -normal;
 
 						for (int i = 0; i < manifold.PointCount; ++i)
 						{
-							Vec2 clipPoint = Common.Math.Mul(xfA, manifold.Points[i].LocalPoint);
-							Vec2 cA = clipPoint - radiusA * normal;
-							Vec2 cB = clipPoint + (radiusB - Vec2.Dot(clipPoint - planePoint, normal)) * normal;
+							Vector2 clipPoint = xfA.TransformPoint(manifold.Points[i].LocalPoint);
+							Vector2 cA = clipPoint - radiusA * normal;
+							Vector2 cB = clipPoint + (radiusB - Vector2.Dot(clipPoint - planePoint, normal)) * normal;
 							Points[i] = 0.5f * (cA + cB);
 						}
 					}

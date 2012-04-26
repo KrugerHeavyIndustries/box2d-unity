@@ -30,6 +30,6 @@ namespace Box2DX.Dynamics
 		{
 			CollideShapeFunction = Collide;
 		}
-		private static void Collide(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2) { }
+		private static void Collide(ref Manifold manifold, Shape shape1, Transform xf1, Shape shape2, Transform xf2) { }
 	}
 }

@@ -28,6 +28,8 @@ using System.Text;
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	/// <summary>
@@ -73,8 +75,8 @@ namespace Box2DX.Collision
 				int i1 = i;
 				int i2 = i + 1 < count ? i + 1 : 0;
 				Vector2 edge = _vertices[i2] - _vertices[i1];
-				Box2DXDebug.Assert(edge.LengthSquared() > Settings.FLT_EPSILON_SQUARED);
-				_normals[i] = Vector2.Cross(edge, 1.0f);
+				Box2DXDebug.Assert(edge.sqrMagnitude > (Mathf.Epsilon * Mathf.Epsilon));
+				_normals[i] = edge.CrossScalarPostMultiply(1.0f);
 				_normals[i].Normalize();
 			}
 
@@ -99,7 +101,7 @@ namespace Box2DX.Collision
 
 					// Your polygon is non-convex (it has an indentation) or
 					// has colinear edges.
-					float s = Vec2.Cross(edge, r);
+					float s = edge.Cross(r);
 					Box2DXDebug.Assert(s > 0.0f);
 				}
 			}
@@ -117,15 +119,15 @@ namespace Box2DX.Collision
 		public void SetAsBox(float hx, float hy)
 		{
 			_vertexCount = 4;
-			_vertices[0].Set(-hx, -hy);
-			_vertices[1].Set(hx, -hy);
-			_vertices[2].Set(hx, hy);
-			_vertices[3].Set(-hx, hy);
-			_normals[0].Set(0.0f, -1.0f);
-			_normals[1].Set(1.0f, 0.0f);
-			_normals[2].Set(0.0f, 1.0f);
-			_normals[3].Set(-1.0f, 0.0f);
-			_centroid = new Vector2(0);
+			_vertices[0] = new Vector2(-hx, -hy);
+			_vertices[1] = new Vector2(hx, -hy);
+			_vertices[2] = new Vector2(hx, hy);
+			_vertices[3] = new Vector2(-hx, hy);
+			_normals[0] = new Vector2(0.0f, -1.0f);
+			_normals[1] = new Vector2(1.0f, 0.0f);
+			_normals[2] = new Vector2(0.0f, 1.0f);
+			_normals[3] = new Vector2(-1.0f, 0.0f);
+			_centroid = Vector2.zero;
 		}
 
 
@@ -136,19 +138,19 @@ namespace Box2DX.Collision
 		/// <param name="hy">The half-height.</param>
 		/// <param name="center">The center of the box in local coordinates.</param>
 		/// <param name="angle">The rotation of the box in local coordinates.</param>
-		public void SetAsBox(float hx, float hy, Vec2 center, float angle)
+		public void SetAsBox(float hx, float hy, Vector2 center, float angle)
 		{
 			SetAsBox(hx, hy);
 
-			XForm xf = new XForm();
-			xf.Position = center;
-			xf.R.Set(angle);
+			Transform xf = new Transform();
+			xf.position = center;
+			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Deg2Rad, Vector3.forward);
 
 			// Transform vertices and normals.
 			for (int i = 0; i < _vertexCount; ++i)
 			{
-				_vertices[i] = Common.Math.Mul(xf, _vertices[i]);
-				_normals[i] = Common.Math.Mul(xf.R, _normals[i]);
+				_vertices[i] = xf.TransformPoint(_vertices[i]);
+				_normals[i] = xf.TransformDirection(_normals[i]);
 			}
 		}
 
@@ -158,19 +160,19 @@ namespace Box2DX.Collision
 			_vertices[0] = v1;
 			_vertices[1] = v2;
 			_centroid = 0.5f * (v1 + v2);
-			_normals[0] = Vec2.Cross(v2 - v1, 1.0f);
+			_normals[0] = (v2 - v1).CrossScalarPostMultiply(1.0f);
 			_normals[0].Normalize();
 			_normals[1] = -_normals[0];
 		}
 
 		public override bool TestPoint(Transform xf, Vector2 p)
 		{
-			Vec2 pLocal = Common.Math.MulT(xf.R, p - xf.Position);
+			Vector2 pLocal = xf.TransformDirection(p - xf.position);
 
 			int vc = _vertexCount;
 			for (int i = 0; i < vc; ++i)
 			{
-				float dot = Vec2.Dot(_normals[i], pLocal - _vertices[i]);
+				float dot = Vector2.Dot(_normals[i], pLocal - _vertices[i]);
 				if (dot > 0.0f)
 				{
 					return false;
@@ -183,13 +185,13 @@ namespace Box2DX.Collision
 		public override SegmentCollide TestSegment(Transform xf, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			lambda = 0f;
-			normal = Vec2.Zero;
+			normal = Vector2.zero;
 
 			float lower = 0.0f, upper = maxLambda;
 
-			Vec2 p1 = Common.Math.MulT(xf.R, segment.P1 - xf.Position);
-			Vec2 p2 = Common.Math.MulT(xf.R, segment.P2 - xf.Position);
-			Vec2 d = p2 - p1;
+			Vector2 p1 = xf.TransformDirection(segment.P1 - xf.position);
+			Vector2 p2 = xf.TransformDirection(segment.P2 - xf.position);
+			Vector2 d = p2 - p1;
 			int index = -1;
 
 			for (int i = 0; i < _vertexCount; ++i)
@@ -197,8 +199,8 @@ namespace Box2DX.Collision
 				// p = p1 + a * d
 				// dot(normal, p - v) = 0
 				// dot(normal, p1 - v) + a * dot(normal, d) = 0
-				float numerator = Vec2.Dot(_normals[i], _vertices[i] - p1);
-				float denominator = Vec2.Dot(_normals[i], d);
+				float numerator = Vector2.Dot(_normals[i], _vertices[i] - p1);
+				float denominator = Vector2.Dot(_normals[i], d);
 
 				if (denominator == 0.0f)
 				{
@@ -239,7 +241,7 @@ namespace Box2DX.Collision
 			if (index >= 0)
 			{
 				lambda = lower;
-				normal = Common.Math.Mul(xf.R, _normals[index]);
+				normal = xf.TransformDirection(_normals[index]);
 				return SegmentCollide.HitCollide;
 			}
 
@@ -247,19 +249,19 @@ namespace Box2DX.Collision
 			return SegmentCollide.StartInsideCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm xf)
+		public override void ComputeAABB(out AABB aabb, Transform xf)
 		{
-			Vec2 lower = Common.Math.Mul(xf, _vertices[0]);
-			Vec2 upper = lower;
+			Vector2 lower = xf.TransformPoint( _vertices[0]);
+			Vector2 upper = lower;
 
 			for (int i = 1; i < _vertexCount; ++i)
 			{
-				Vec2 v = Common.Math.Mul(xf, _vertices[i]);
+				Vector2 v = xf.TransformPoint(_vertices[i]);
 				lower = Common.Math.Min(lower, v);
 				upper = Common.Math.Max(upper, v);
 			}
 
-			Vec2 r = new Vec2(_radius);
+			Vector2 r = new Vector2(_radius, _radius);
 			aabb.LowerBound = lower - r;
 			aabb.UpperBound = upper + r;
 		}
@@ -292,13 +294,13 @@ namespace Box2DX.Collision
 
 			Box2DXDebug.Assert(_vertexCount >= 3);
 
-			Vec2 center = new Vec2(0);
+			Vector2 center = Vector2.zero;
 			float area = 0.0f;
 			float I = 0.0f;
 
 			// pRef is the reference point for forming triangles.
 			// It's location doesn't change the result (except for rounding error).
-			Vec2 pRef = new Vec2(0);
+			Vector2 pRef = Vector2.zero;
 
 #if O
 			// This code would put the reference point inside the polygon.
@@ -314,14 +316,14 @@ namespace Box2DX.Collision
 			for (int i = 0; i < _vertexCount; ++i)
 			{
 				// Triangle vertices.
-				Vec2 p1 = pRef;
-				Vec2 p2 = _vertices[i];
-				Vec2 p3 = i + 1 < _vertexCount ? _vertices[i + 1] : _vertices[0];
+				Vector2 p1 = pRef;
+				Vector2 p2 = _vertices[i];
+				Vector2 p3 = i + 1 < _vertexCount ? _vertices[i + 1] : _vertices[0];
 
-				Vec2 e1 = p2 - p1;
-				Vec2 e2 = p3 - p1;
+				Vector2 e1 = p2 - p1;
+				Vector2 e2 = p3 - p1;
 
-				float D = Vec2.Cross(e1, e2);
+				float D = e1.Cross(e2);
 
 				float triangleArea = 0.5f * D;
 				area += triangleArea;
@@ -329,9 +331,9 @@ namespace Box2DX.Collision
 				// Area weighted centroid
 				center += triangleArea * k_inv3 * (p1 + p2 + p3);
 
-				float px = p1.X, py = p1.Y;
-				float ex1 = e1.X, ey1 = e1.Y;
-				float ex2 = e2.X, ey2 = e2.Y;
+				float px = p1.x, py = p1.y;
+				float ex1 = e1.x, ey1 = e1.y;
+				float ex2 = e2.x, ey2 = e2.y;
 
 				float intx2 = k_inv3 * (0.25f * (ex1 * ex1 + ex2 * ex1 + ex2 * ex2) + (px * ex1 + px * ex2)) + 0.5f * px * px;
 				float inty2 = k_inv3 * (0.25f * (ey1 * ey1 + ey2 * ey1 + ey2 * ey2) + (py * ey1 + py * ey2)) + 0.5f * py * py;
@@ -354,8 +356,8 @@ namespace Box2DX.Collision
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform xf, out Vector2 c)
 		{
 			//Transform plane into shape co-ordinates
-			Vec2 normalL = Box2DX.Common.Math.MulT(xf.R, normal);
-			float offsetL = offset - Vec2.Dot(normal, xf.Position);
+			Vector2 normalL = xf.TransformDirection(normal);
+			float offsetL = offset - Vector2.Dot(normal, xf.position);
 
 			float[] depths = new float[Common.Settings.MaxPolygonVertices];
 			int diveCount = 0;
@@ -366,7 +368,7 @@ namespace Box2DX.Collision
 			int i;
 			for (i = 0; i < _vertexCount; i++)
 			{
-				depths[i] = Vec2.Dot(normalL, _vertices[i]) - offsetL;
+				depths[i] = Vector2.Dot(normalL, _vertices[i]) - offsetL;
 				bool isSubmerged = depths[i] < -Common.Settings.FLT_EPSILON;
 				if (i > 0)
 				{
@@ -397,13 +399,13 @@ namespace Box2DX.Collision
 						//Completely submerged
 						MassData md;
 						ComputeMass(out md, 1f);
-						c = Common.Math.Mul(xf, md.Center);
+						c = xf.TransformPoint(md.Center);
 						return md.Mass;
 					}
 					else
 					{
 						//Completely dry
-						c = new Vec2();
+						c = new Vector2();
 						return 0;
 					}
 					break;
@@ -424,16 +426,16 @@ namespace Box2DX.Collision
 			float intoLambda = (0 - depths[intoIndex]) / (depths[intoIndex2] - depths[intoIndex]);
 			float outoLambda = (0 - depths[outoIndex]) / (depths[outoIndex2] - depths[outoIndex]);
 
-			Vec2 intoVec = new Vec2(_vertices[intoIndex].X * (1 - intoLambda) + _vertices[intoIndex2].X * intoLambda,
-							_vertices[intoIndex].Y * (1 - intoLambda) + _vertices[intoIndex2].Y * intoLambda);
-			Vec2 outoVec = new Vec2(_vertices[outoIndex].X * (1 - outoLambda) + _vertices[outoIndex2].X * outoLambda,
-							_vertices[outoIndex].Y * (1 - outoLambda) + _vertices[outoIndex2].Y * outoLambda);
+			Vector2 intoVec = new Vector2(_vertices[intoIndex].x * (1 - intoLambda) + _vertices[intoIndex2].x * intoLambda,
+							_vertices[intoIndex].y * (1 - intoLambda) + _vertices[intoIndex2].y * intoLambda);
+			Vector2 outoVec = new Vector2(_vertices[outoIndex].x * (1 - outoLambda) + _vertices[outoIndex2].x * outoLambda,
+							_vertices[outoIndex].y * (1 - outoLambda) + _vertices[outoIndex2].y * outoLambda);
 
 			//Initialize accumulator
 			float area = 0;
-			Vec2 center = new Vec2(0);
-			Vec2 p2 = _vertices[intoIndex2];
-			Vec2 p3;
+			Vector2 center = Vector2.zero;
+			Vector2 p2 = _vertices[intoIndex2];
+			Vector2 p3;
 
 			const float k_inv3 = 1.0f / 3.0f;
 
@@ -448,10 +450,10 @@ namespace Box2DX.Collision
 					p3 = _vertices[i];
 				//Add the triangle formed by intoVec,p2,p3
 				{
-					Vec2 e1 = p2 - intoVec;
-					Vec2 e2 = p3 - intoVec;
+					Vector2 e1 = p2 - intoVec;
+					Vector2 e2 = p3 - intoVec;
 
-					float D = Vec2.Cross(e1, e2);
+					float D = e1.Cross(e2);
 
 					float triangleArea = 0.5f * D;
 
@@ -468,7 +470,7 @@ namespace Box2DX.Collision
 			//Normalize and transform centroid
 			center *= 1.0f / area;
 
-			c = Common.Math.Mul(xf, center);
+			c = xf.TransformPoint(center);
 
 			return area;
 		}
@@ -477,13 +479,13 @@ namespace Box2DX.Collision
 		{
 			int vCount = _vertexCount;
 			Box2DXDebug.Assert(vCount > 0);
-			float sr = Vec2.DistanceSquared(_vertices[0], pivot);
+			float sr = (_vertices[0] - pivot).sqrMagnitude;
 			for (int i = 1; i < vCount; ++i)
 			{
-				sr = Common.Math.Max(sr, Vec2.DistanceSquared(_vertices[i], pivot));
+				sr = Common.Math.Max(sr, (_vertices[i] - pivot).sqrMagnitude);
 			}
 
-			return Common.Math.Sqrt(sr);
+			return Mathf.Sqrt(sr);
 		}
 
 		/// <summary>
@@ -492,10 +494,10 @@ namespace Box2DX.Collision
 		public override int GetSupport(Vector2 d)
 		{
 			int bestIndex = 0;
-			float bestValue = Vec2.Dot(_vertices[0], d);
+			float bestValue = Vector2.Dot(_vertices[0], d);
 			for (int i = 1; i < _vertexCount; ++i)
 			{
-				float value = Vec2.Dot(_vertices[i], d);
+				float value = Vector2.Dot(_vertices[i], d);
 				if (value > bestValue)
 				{
 					bestIndex = i;
@@ -533,12 +535,12 @@ namespace Box2DX.Collision
 		{
 			Box2DXDebug.Assert(count >= 3);
 
-			Vec2 c = new Vec2(0f);
+			Vector2 c = Vector2.zero;
 			float area = 0f;
 
 			// pRef is the reference point for forming triangles.
 			// It's location doesn't change the result (except for rounding error).
-			Vec2 pRef = new Vec2(0f);
+			Vector2 pRef = Vector2.zero;
 #if O
 			// This code would put the reference point inside the polygon.
 			for (int i = 0; i < count; ++i)
@@ -553,14 +555,14 @@ namespace Box2DX.Collision
 			for (int i = 0; i < count; ++i)
 			{
 				// Triangle vertices.
-				Vec2 p1 = pRef;
-				Vec2 p2 = vs[i];
-				Vec2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
+				Vector2 p1 = pRef;
+				Vector2 p2 = vs[i];
+				Vector2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
 
-				Vec2 e1 = p2 - p1;
-				Vec2 e2 = p3 - p1;
+				Vector2 e1 = p2 - p1;
+				Vector2 e2 = p3 - p1;
 
-				float D = Vec2.Cross(e1, e2);
+				float D = e1.Cross(e2);
 
 				float triangleArea = 0.5f * D;
 				area += triangleArea;
@@ -570,7 +572,7 @@ namespace Box2DX.Collision
 			}
 
 			// Centroid
-			Box2DXDebug.Assert(area > Common.Settings.FLT_EPSILON);
+			Box2DXDebug.Assert(area > Mathf.Epsilon);
 			c *= 1.0f / area;
 			return c;
 		}

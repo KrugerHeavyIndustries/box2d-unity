@@ -17,6 +17,7 @@
 */
 
 using Box2DX.Common;
+using UnityEngine;
 
 namespace Box2DX.Dynamics.Controllers
 {
@@ -27,7 +28,7 @@ namespace Box2DX.Dynamics.Controllers
     public class ConstantForceControllerDef
     {
         /// The force to apply
-        public Vec2 F;
+        public Vector2 F;
     }
 
     public class ConstantForceController : Controller
@@ -35,7 +36,7 @@ namespace Box2DX.Dynamics.Controllers
         /// <summary>
         /// The force to apply
         /// </summary>
-        Vec2 F;
+        Vector2 F;
 
         public ConstantForceController(ConstantForceControllerDef def)
         {

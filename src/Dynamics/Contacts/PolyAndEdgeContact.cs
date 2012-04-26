@@ -21,6 +21,8 @@
 
 using Box2DX.Collision;
 using Box2DX.Common;
+using UnityEngine;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -34,7 +36,7 @@ namespace Box2DX.Dynamics
 			CollideShapeFunction = CollidePolyAndEdgeContact;
 		}
 
-		private static void CollidePolyAndEdgeContact(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
+		private static void CollidePolyAndEdgeContact(ref Manifold manifold, Shape shape1, Transform xf1, Shape shape2, Transform xf2)
 		{
 			Collision.Collision.CollidePolyAndEdge(ref manifold, (PolygonShape)shape1, xf1, (EdgeShape)shape2, xf2);
 		}

@@ -22,6 +22,8 @@
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	/// <summary>
@@ -39,7 +41,7 @@ namespace Box2DX.Collision
 
 		public override bool TestPoint(Transform transform, Vector2 p)
 		{
-			Vector2 center = transform.Position + Common.Math.Mul(transform.R, _position);
+			Vector2 center = transform.position + transform.TransformDirection(_position);
 			Vector2 d = p - center;
 			return Vector2.Dot(d, d) <= _radius * _radius;
 		}
@@ -51,11 +53,11 @@ namespace Box2DX.Collision
 		public override SegmentCollide TestSegment(Transform transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			lambda = 0f;
-			normal = Vec2.Zero;
+			normal = Vector2.zero;
 
-			Vec2 position = transform.Position + Common.Math.Mul(transform.R, _position);
-			Vec2 s = segment.P1 - position;
-			float b = Vec2.Dot(s, s) - _radius * _radius;
+			Vector2 position = transform.position + transform.TransformDirection(_position);
+			Vector2 s = segment.P1 - position;
+			float b = Vector2.Dot(s, s) - _radius * _radius;
 
 			// Does the segment start inside the circle?
 			if (b < 0.0f)
@@ -65,9 +67,9 @@ namespace Box2DX.Collision
 			}
 
 			// Solve quadratic equation.
-			Vec2 r = segment.P2 - segment.P1;
-			float c = Vec2.Dot(s, r);
-			float rr = Vec2.Dot(r, r);
+			Vector2 r = segment.P2 - segment.P1;
+			float c = Vector2.Dot(s, r);
+			float rr = Vector2.Dot(r, r);
 			float sigma = c * c - rr * b;
 
 			// Check for negative discriminant and short segment.
@@ -92,34 +94,34 @@ namespace Box2DX.Collision
 			return SegmentCollide.MissCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm transform)
+		public override void ComputeAABB(out AABB aabb, Transform transform)
 		{
 			aabb = new AABB();
 
-			Vec2 p = transform.Position + Common.Math.Mul(transform.R, _position);
-			aabb.LowerBound.Set(p.X - _radius, p.Y - _radius);
-			aabb.UpperBound.Set(p.X + _radius, p.Y + _radius);
+			Vector2 p = transform.position + transform.TransformDirection(_position);
+			aabb.LowerBound = new Vector2(p.x - _radius, p.y - _radius);
+			aabb.UpperBound = new Vector2(p.x + _radius, p.y + _radius);
 		}
 
 		public override void ComputeMass(out MassData massData, float density)
 		{
 			massData = new MassData();
 
-			massData.Mass = density * Settings.Pi * _radius * _radius;
+			massData.Mass = density * Mathf.PI * _radius * _radius;
 			massData.Center = _position;
 
 			// inertia about the local origin
-			massData.I = massData.Mass * (0.5f * _radius * _radius + Vec2.Dot(_position, _position));
+			massData.I = massData.Mass * (0.5f * _radius * _radius + Vector2.Dot(_position, _position));
 		}		
 
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform transform, out Vector2 c)
 		{
-			Vec2 p = Box2DX.Common.Math.Mul(xf, _position);
-			float l = -(Vec2.Dot(normal, p) - offset);
+			Vector2 p = transform.TransformPoint(_position);
+			float l = -(Vector2.Dot(normal, p) - offset);
 			if (l < -_radius + Box2DX.Common.Settings.FLT_EPSILON)
 			{
 				//Completely dry
-				c = new Vec2();
+				c = new Vector2();
 				return 0;
 			}
 			if (l > _radius)
@@ -136,8 +138,8 @@ namespace Box2DX.Collision
 				l * Box2DX.Common.Math.Sqrt(r2 - l2);
 			float com = -2.0f / 3.0f * (float)System.Math.Pow(r2 - l2, 1.5f) / area;
 
-			c.X = p.X + normal.X * com;
-			c.Y = p.Y + normal.Y * com;
+			c.x = p.x + normal.x * com;
+			c.y = p.y + normal.y * com;
 
 			return area;
 		}

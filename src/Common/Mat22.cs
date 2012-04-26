@@ -23,6 +23,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using UnityEngine;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -56,7 +58,7 @@ namespace Box2DX.Common
 		/// </summary>
 		public Mat22(float angle)
 		{
-			float c = (float)System.Math.Cos(angle), s = (float)System.Math.Sin(angle);
+			float c = (float)Mathf.Cos(angle), s = (float)Mathf.Sin(angle);
 			Col1.X = c; Col2.X = -s;
 			Col1.Y = s; Col2.Y = c;
 		}
@@ -106,7 +108,11 @@ namespace Box2DX.Common
 		{
 			return (float)System.Math.Atan2(Col1.Y, Col1.X);
 		}
-
+		
+		public Vector2 Multiply(Vector2 vector) { 
+			return new Vector2(Col1.X * vector.x + Col2.X * vector.y, Col1.Y * vector.x + Col2.Y * vector.y);
+		}
+		
 		/// <summary>
 		/// Compute the inverse of this matrix, such that inv(A) * A = identity.
 		/// </summary>
@@ -126,15 +132,15 @@ namespace Box2DX.Common
 		/// Solve A * x = b, where b is a column vector. This is more efficient
 		/// than computing the inverse in one-shot cases.
 		/// </summary>
-		public Vec2 Solve(Vec2 b)
+		public Vector2 Solve(Vector2 b)
 		{
 			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
 			float det = a11 * a22 - a12 * a21;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec2 x = new Vec2();
-			x.X = det * (a22 * b.X - a12 * b.Y);
-			x.Y = det * (a11 * b.Y - a21 * b.X);
+			Vector2 x = new Vector2();
+			x.x = det * (a22 * b.x - a12 * b.y);
+			x.y = det * (a11 * b.y - a21 * b.x);
 			return x;
 		}
 

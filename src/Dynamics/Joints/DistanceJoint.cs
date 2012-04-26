@@ -39,6 +39,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Box2DX.Common;
+using UnityEngine;
 
 namespace Box2DX.Dynamics
 {
@@ -55,8 +56,8 @@ namespace Box2DX.Dynamics
 		public DistanceJointDef()
 		{
 			Type = JointType.DistanceJoint;
-			LocalAnchor1.Set(0.0f, 0.0f);
-			LocalAnchor2.Set(0.0f, 0.0f);
+			LocalAnchor1 = Vector2.zero;
+			LocalAnchor2 = Vector2.zero;
 			Length = 1.0f;
 			FrequencyHz = 0.0f;
 			DampingRatio = 0.0f;
@@ -65,25 +66,25 @@ namespace Box2DX.Dynamics
 		/// <summary>
 		/// Initialize the bodies, anchors, and length using the world anchors.
 		/// </summary>
-		public void Initialize(Body body1, Body body2, Vec2 anchor1, Vec2 anchor2)
+		public void Initialize(Body body1, Body body2, Vector2 anchor1, Vector2 anchor2)
 		{
 			Body1 = body1;
 			Body2 = body2;
 			LocalAnchor1 = body1.GetLocalPoint(anchor1);
 			LocalAnchor2 = body2.GetLocalPoint(anchor2);
-			Vec2 d = anchor2 - anchor1;
-			Length = d.Length();
+			Vector2 d = anchor2 - anchor1;
+			Length = d.magnitude;
 		}
 
 		/// <summary>
 		/// The local anchor point relative to body1's origin.
 		/// </summary>
-		public Vec2 LocalAnchor1;
+		public Vector2 LocalAnchor1;
 
 		/// <summary>
 		/// The local anchor point relative to body2's origin.
 		/// </summary>
-		public Vec2 LocalAnchor2;
+		public Vector2 LocalAnchor2;
 
 		/// <summary>
 		/// The equilibrium length between the anchor points.
@@ -108,9 +109,9 @@ namespace Box2DX.Dynamics
 	/// </summary>
 	public class DistanceJoint : Joint
 	{
-		public Vec2 _localAnchor1;
-		public Vec2 _localAnchor2;
-		public Vec2 _u;
+		public Vector2 _localAnchor1;
+		public Vector2 _localAnchor2;
+		public Vector2 _u;
 		public float _frequencyHz;
 		public float _dampingRatio;
 		public float _gamma;
@@ -119,17 +120,17 @@ namespace Box2DX.Dynamics
 		public float _mass;		// effective mass for the constraint.
 		public float _length;
 
-		public override Vec2 Anchor1
+		public override Vector2 Anchor1
 		{
 			get { return _body1.GetWorldPoint(_localAnchor1);}
 		}
 
-		public override Vec2 Anchor2
+		public override Vector2 Anchor2
 		{
 			get { return _body2.GetWorldPoint(_localAnchor2);}
 		}
 
-		public override Vec2 GetReactionForce(float inv_dt)
+		public override Vector2 GetReactionForce(float inv_dt)
 		{
 			return (inv_dt * _impulse) * _u;
 		}
@@ -158,23 +159,23 @@ namespace Box2DX.Dynamics
 			Body b2 = _body2;
 
 			// Compute the effective mass matrix.
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 			_u = b2._sweep.C + r2 - b1._sweep.C - r1;
 
 			// Handle singularity.
-			float length = _u.Length();
+			float length = _u.magnitude;
 			if (length > Settings.LinearSlop)
 			{
 				_u *= 1.0f / length;
 			}
 			else
 			{
-				_u.Set(0.0f, 0.0f);
+				_u = Vector2.zero;
 			}
 
-			float cr1u = Vec2.Cross(r1, _u);
-			float cr2u = Vec2.Cross(r2, _u);
+			float cr1u = r1.Cross(_u);
+			float cr2u = r2.Cross(_u);
 			float invMass = b1._invMass + b1._invI * cr1u * cr1u + b2._invMass + b2._invI * cr2u * cr2u;
 			Box2DXDebug.Assert(invMass > Settings.FLT_EPSILON);
 			_mass = 1.0f / invMass;
@@ -203,11 +204,11 @@ namespace Box2DX.Dynamics
 			{
 				//Scale the inpulse to support a variable timestep.
 				_impulse *= step.DtRatio;
-				Vec2 P = _impulse * _u;
+				Vector2 P = _impulse * _u;
 				b1._linearVelocity -= b1._invMass * P;
-				b1._angularVelocity -= b1._invI * Vec2.Cross(r1, P);
+				b1._angularVelocity -= b1._invI * r1.Cross(P);
 				b2._linearVelocity += b2._invMass * P;
-				b2._angularVelocity += b2._invI * Vec2.Cross(r2, P);
+				b2._angularVelocity += b2._invI * r2.Cross(P);
 			}
 			else
 			{
@@ -226,23 +227,23 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
-			Vec2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
+			Vector2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
 
-			float length = d.Normalize();
+			float length = d.magnitude;
 			float C = length - _length;
-			C = Common.Math.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
+			C = Mathf.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 
 			float impulse = -_mass * C;
 			_u = d;
-			Vec2 P = impulse * _u;
+			Vector2 P = impulse * _u;
 
 			b1._sweep.C -= b1._invMass * P;
-			b1._sweep.A -= b1._invI * Vec2.Cross(r1, P);
+			b1._sweep.A -= b1._invI * r1.Cross(P);
 			b2._sweep.C += b2._invMass * P;
-			b2._sweep.A += b2._invI * Vec2.Cross(r2, P);
+			b2._sweep.A += b2._invI * r2.Cross(P);
 
 			b1.SynchronizeTransform();
 			b2.SynchronizeTransform();
@@ -257,21 +258,21 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vec2 r1 = Common.Math.Mul(b1.GetXForm().R, _localAnchor1 - b1.GetLocalCenter());
-			Vec2 r2 = Common.Math.Mul(b2.GetXForm().R, _localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetXForm().TransformDirection( _localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 			// Cdot = dot(u, v + cross(w, r))
-			Vec2 v1 = b1._linearVelocity + Vec2.Cross(b1._angularVelocity, r1);
-			Vec2 v2 = b2._linearVelocity + Vec2.Cross(b2._angularVelocity, r2);
-			float Cdot = Vec2.Dot(_u, v2 - v1);
+			Vector2 v1 = b1._linearVelocity + r1.CrossScalarPreMultiply(b1._angularVelocity);
+			Vector2 v2 = b2._linearVelocity + r2.CrossScalarPreMultiply(b2._angularVelocity);
+			float Cdot = Vector2.Dot(_u, v2 - v1);
 			float impulse = -_mass * (Cdot + _bias + _gamma * _impulse);
 			_impulse += impulse;
 
-			Vec2 P = impulse * _u;
+			Vector2 P = impulse * _u;
 			b1._linearVelocity -= b1._invMass * P;
-			b1._angularVelocity -= b1._invI * Vec2.Cross(r1, P);
+			b1._angularVelocity -= b1._invI * r1.Cross(P);
 			b2._linearVelocity += b2._invMass * P;
-			b2._angularVelocity += b2._invI * Vec2.Cross(r2, P);
+			b2._angularVelocity += b2._invI * r2.Cross(P);
 		}
 	}
 }

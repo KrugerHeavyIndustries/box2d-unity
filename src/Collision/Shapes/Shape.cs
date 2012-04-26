@@ -23,6 +23,8 @@ using System;
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	/// <summary>
@@ -38,7 +40,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// The position of the shape's centroid relative to the shape's origin.
 		/// </summary>
-		public Vec2 Center;
+		public Vector2 Center;
 
 		/// <summary>
 		/// The rotational inertia of the shape.
@@ -108,7 +110,7 @@ namespace Box2DX.Collision
 		/// </summary>
 		/// <param name="aabb">Returns the axis aligned box.</param>
 		/// <param name="xf">The world transform of the shape.</param>
-		public abstract void ComputeAABB(out AABB aabb, XForm xf);
+		public abstract void ComputeAABB(out AABB aabb, Transform xf);
 
 		/// <summary>
 		/// Compute the mass properties of this shape using its dimensions and density.

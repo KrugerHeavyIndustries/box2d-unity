@@ -25,6 +25,8 @@ using System.Text;
 using Box2DX.Common;
 using UnityEngine;
 
+using Transform = Box2DX.Common.Transform;
+
 namespace Box2DX.Collision
 {
 	public class EdgeShape : Shape
@@ -75,8 +77,8 @@ namespace Box2DX.Collision
 			_v2 = v2;
 
 			_direction = _v2 - _v1;
-			_length = _direction.Normalize();
-			_normal = Vector2.Cross(_direction, 1.0f);
+			_length = _direction.magnitude;
+			_normal = _direction.CrossScalarPostMultiply(1.0f);
 
 			_cornerDir1 = _normal;
 			_cornerDir2 = -1.0f * _normal;
@@ -90,23 +92,23 @@ namespace Box2DX.Collision
 		public override SegmentCollide TestSegment(Transform transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			Vector2 r = segment.P2 - segment.P1;
-			Vector2 v1 = Common.Math.Mul(transform, _v1);
-			Vector2 d = Common.Math.Mul(transform, _v2) - v1;
-			Vector2 n = Vec2.Cross(d, 1.0f);
+			Vector2 v1 = transform.TransformPoint(_v1);
+			Vector2 d = ((Vector2)transform.TransformPoint(_v2)) - v1;
+			Vector2 n = d.CrossScalarPostMultiply(1.0f);
 
 			float k_slop = 100.0f * Common.Settings.FLT_EPSILON;
-			float denom = -Vec2.Dot(r, n);
+			float denom = -Vector2.Dot(r, n);
 
 			// Cull back facing collision and ignore parallel segments.
 			if (denom > k_slop)
 			{
 				// Does the segment intersect the infinite line associated with this segment?
 				Vector2 b = segment.P1 - v1;
-				float a = Vec2.Dot(b, n);
+				float a = Vector2.Dot(b, n);
 
 				if (0.0f <= a && a <= maxLambda * denom)
 				{
-					float mu2 = -r.X * b.Y + r.Y * b.X;
+					float mu2 = -r.x * b.y + r.y * b.x;
 
 					// Does the segment intersect this segment?
 					if (-k_slop * denom <= mu2 && mu2 <= denom * (1.0f + k_slop))
@@ -125,12 +127,12 @@ namespace Box2DX.Collision
 			return SegmentCollide.MissCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm transform)
+		public override void ComputeAABB(out AABB aabb, Transform transform)
 		{
-			Vec2 v1 = Common.Math.Mul(transform, _v1);
-			Vec2 v2 = Common.Math.Mul(transform, _v2);
+			Vector2 v1 = transform.TransformPoint(_v1);
+			Vector2 v2 = transform.TransformPoint(_v2);
 
-			Vec2 r = new Vec2(_radius, _radius);
+			Vector2 r = new Vector2(_radius, _radius);
 			aabb.LowerBound = Common.Math.Min(v1, v2) - r;
 			aabb.UpperBound = Common.Math.Max(v1, v2) + r;
 		}
@@ -160,20 +162,20 @@ namespace Box2DX.Collision
 		{
 			//Note that v0 is independent of any details of the specific edge
 			//We are relying on v0 being consistent between multiple edges of the same body
-			Vec2 v0 = offset * normal;
+			Vector2 v0 = offset * normal;
 			//b2Vec2 v0 = xf.position + (offset - b2Dot(normal, xf.position)) * normal;
 
-			Vec2 v1 = Common.Math.Mul(xf, _v1);
-			Vec2 v2 = Common.Math.Mul(xf, _v2);
+			Vector2 v1 = xf.TransformPoint(_v1);
+			Vector2 v2 = xf.TransformPoint(_v2);
 
-			float d1 = Vec2.Dot(normal, v1) - offset;
-			float d2 = Vec2.Dot(normal, v2) - offset;
+			float d1 = Vector2.Dot(normal, v1) - offset;
+			float d2 = Vector2.Dot(normal, v2) - offset;
 
 			if (d1 > 0.0f)
 			{
 				if (d2 > 0.0f)
 				{
-					c = new Vec2();
+					c = new Vector2();
 					return 0.0f;
 				}
 				else
@@ -200,9 +202,9 @@ namespace Box2DX.Collision
 			c = k_inv3 * (v0 + v1 + v2);
 
 			Vector2 e1 = v1 - v0;
-			Vec2 e2 = v2 - v0;
+			Vector2 e2 = v2 - v0;
 
-			return 0.5f * Vec2.Cross(e1, e2);
+			return 0.5f * e1.Cross(e2);
 		}
 
 		public float Length
@@ -215,7 +217,7 @@ namespace Box2DX.Collision
 			get { return _v1; }
 		}
 
-		public Vec2 Vertex2
+		public Vector2 Vertex2
 		{
 			get { return _v2; }
 		}
@@ -269,9 +271,9 @@ namespace Box2DX.Collision
 
 		public override float ComputeSweepRadius(Vector2 pivot)
 		{
-			float ds1 = Vector2.DistanceSquared(_v1, pivot);
-			float ds2 = Vector2.DistanceSquared(_v2, pivot);
-			return Common.Math.Sqrt(Common.Math.Max(ds1, ds2));
+			float ds1 = (_v1 - pivot).sqrMagnitude;
+			float ds2 = (_v2 - pivot).sqrMagnitude;
+			return Mathf.Sqrt(Mathf.Max(ds1, ds2));
 		}
 	}
 }
