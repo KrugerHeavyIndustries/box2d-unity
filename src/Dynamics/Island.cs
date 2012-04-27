@@ -242,8 +242,8 @@ namespace Box2DX.Dynamics
 				// v2 = exp(-c * dt) * v1
 				// Taylor expansion:
 				// v2 = (1.0f - c * dt) * v1
-				b._linearVelocity *= Common.Math.Clamp(1.0f - step.Dt * b._linearDamping, 0.0f, 1.0f);
-				b._angularVelocity *= Common.Math.Clamp(1.0f - step.Dt * b._angularDamping, 0.0f, 1.0f);
+				b._linearVelocity *= Mathf.Clamp(1.0f - step.Dt * b._linearDamping, 0.0f, 1.0f);
+				b._angularVelocity *= Mathf.Clamp(1.0f - step.Dt * b._angularDamping, 0.0f, 1.0f);
 			}
 
 			ContactSolver contactSolver = new ContactSolver(step, _contacts, _contactCount);

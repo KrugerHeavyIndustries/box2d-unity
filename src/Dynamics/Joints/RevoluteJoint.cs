@@ -443,7 +443,7 @@ namespace Box2DX.Dynamics
 				float impulse = _motorMass * (-Cdot);
 				float oldImpulse = _motorImpulse;
 				float maxImpulse = step.Dt * _maxMotorTorque;
-				_motorImpulse = Box2DXMath.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
+				_motorImpulse = Mathf.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
 				impulse = _motorImpulse - oldImpulse;
 
 				w1 -= i1 * impulse;
@@ -548,7 +548,7 @@ namespace Box2DX.Dynamics
 				if (_limitState == LimitState.EqualLimits)
 				{
 					// Prevent large angular corrections
-					float C = Box2DXMath.Clamp(angle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
+					float C = Mathf.Clamp(angle, -Settings.MaxAngularCorrection, Settings.MaxAngularCorrection);
 					limitImpulse = -_motorMass * C;
 					angularError = Box2DXMath.Abs(C);
 				}
@@ -558,7 +558,7 @@ namespace Box2DX.Dynamics
 					angularError = -C;
 
 					// Prevent large angular corrections and allow some slop.
-					C = Box2DXMath.Clamp(C + Settings.AngularSlop, -Settings.MaxAngularCorrection, 0.0f);
+					C = Mathf.Clamp(C + Settings.AngularSlop, -Settings.MaxAngularCorrection, 0.0f);
 					limitImpulse = -_motorMass * C;
 				}
 				else if (_limitState == LimitState.AtUpperLimit)
@@ -567,7 +567,7 @@ namespace Box2DX.Dynamics
 					angularError = C;
 
 					// Prevent large angular corrections and allow some slop.
-					C = Box2DXMath.Clamp(C - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
+					C = Mathf.Clamp(C - Settings.AngularSlop, 0.0f, Settings.MaxAngularCorrection);
 					limitImpulse = -_motorMass * C;
 				}
 

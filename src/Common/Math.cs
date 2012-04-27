@@ -117,10 +117,8 @@ namespace Box2DX.Common
 
 		public static float Sqrt(float x)
 		{
-			return (float)System.Math.Sqrt(x);
+			return Mathf.Sqrt(x);
 		}
-
-		private static Random s_rnd = new Random();
 		
 		/// <summary>
 		/// Random floating point number in range [lo, hi]
@@ -176,11 +174,6 @@ namespace Box2DX.Common
 			return a < b ? a : b;
 		}
 
-		public static Vector2 Min(Vector2 a, Vector2 b)
-		{
-			return new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y));
-		}
-
 		public static float Max(float a, float b)
 		{
 			return a > b ? a : b;
@@ -191,24 +184,9 @@ namespace Box2DX.Common
 			return a > b ? a : b;
 		}
 
-		public static Vector2 Max(Vector2 a, Vector2 b)
-		{
-			return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y));
-		}
-
-		public static float Clamp(float a, float low, float high)
-		{
-			return Math.Max(low, Math.Min(a, high));
-		}
-
-		public static int Clamp(int a, int low, int high)
-		{
-			return Math.Max(low, Math.Min(a, high));
-		}
-
 		public static Vector2 Clamp(Vector2 a, Vector2 low, Vector2 high)
 		{
-			return Math.Max(low, Math.Min(a, high));
+			return Vector2.Max(low, Vector2.Min(a, high));
 		}
 
 		public static void Swap<T>(ref T a, ref T b)

@@ -257,8 +257,8 @@ namespace Box2DX.Collision
 			for (int i = 1; i < _vertexCount; ++i)
 			{
 				Vector2 v = xf.TransformPoint(_vertices[i]);
-				lower = Common.Math.Min(lower, v);
-				upper = Common.Math.Max(upper, v);
+				lower = Vector2.Min(lower, v);
+				upper = Vector2.Max(upper, v);
 			}
 
 			Vector2 r = new Vector2(_radius, _radius);

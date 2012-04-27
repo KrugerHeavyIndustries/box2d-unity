@@ -170,7 +170,7 @@ namespace Box2DX.Collision
 		// is the number of proxies that are out of range.
 		public bool InRange(AABB aabb)
 		{
-			Vector2 d = Common.Math.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
+			Vector2 d = Vector2.Max(aabb.LowerBound - _worldAABB.UpperBound, _worldAABB.LowerBound - aabb.UpperBound);
 			return Mathf.Max(d.x, d.y) < 0.0f;
 		}
 

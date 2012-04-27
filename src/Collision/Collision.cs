@@ -53,8 +53,7 @@ namespace Box2DX.Collision
 		/// Compute the point states given two manifolds. The states pertain to the transition from manifold1
 		/// to manifold2. So state1 is either persist or remove while state2 is either add or persist.
 		/// </summary>
-		public static void GetPointStates(PointState[/*b2_maxManifoldPoints*/] state1, PointState[/*b2_maxManifoldPoints*/] state2,
-					  Manifold manifold1, Manifold manifold2)
+		public static void GetPointStates(PointState[/*b2_maxManifoldPoints*/] state1, PointState[/*b2_maxManifoldPoints*/] state2, Manifold manifold1, Manifold manifold2)
 		{
 			for (int i = 0; i < Common.Settings.MaxManifoldPoints; ++i)
 			{
@@ -391,8 +390,8 @@ namespace Box2DX.Collision
 		/// Combine two AABBs into this one.
 		public void Combine(AABB aabb1, AABB aabb2)
 		{
-			LowerBound = Common.Math.Min(aabb1.LowerBound, aabb2.LowerBound);
-			UpperBound = Common.Math.Max(aabb1.UpperBound, aabb2.UpperBound);
+			LowerBound = Vector2.Min(aabb1.LowerBound, aabb2.LowerBound);
+			UpperBound = Vector2.Max(aabb1.UpperBound, aabb2.UpperBound);
 		}
 
 		/// Does this aabb contain the provided AABB.
@@ -543,7 +542,7 @@ namespace Box2DX.Collision
 						Vector2 pointA = xfA.TransformPoint(manifold.LocalPoint);
 						Vector2 pointB = xfB.TransformPoint(manifold.Points[0].LocalPoint);
 						Vector2 normal = new Vector2(1.0f, 0.0f);
-						if ((pointA - pointB).sqrMagnitude > Common.Settings.FLT_EPSILON_SQUARED)
+						if ((pointA - pointB).sqrMagnitude > (Mathf.Epsilon * Mathf.Epsilon))
 						{
 							normal = pointB - pointA;
 							normal.Normalize();

@@ -133,8 +133,8 @@ namespace Box2DX.Collision
 			Vector2 v2 = transform.TransformPoint(_v2);
 
 			Vector2 r = new Vector2(_radius, _radius);
-			aabb.LowerBound = Common.Math.Min(v1, v2) - r;
-			aabb.UpperBound = Common.Math.Max(v1, v2) + r;
+			aabb.LowerBound = Vector2.Min(v1, v2) - r;
+			aabb.UpperBound = Vector2.Max(v1, v2) + r;
 		}
 
 		public override void ComputeMass(out MassData massData, float density)

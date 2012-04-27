@@ -59,7 +59,8 @@ namespace Box2DX.Common
 		/// </summary>
 		public Mat22(float angle)
 		{
-			float c = (float)Mathf.Cos(angle), s = (float)Mathf.Sin(angle);
+			float c = Mathf.Cos(angle);
+			float s = Mathf.Sin(angle);
 			Col1.x = c; Col2.x = -s;
 			Col1.y = s; Col2.y = c;
 		}
@@ -79,27 +80,10 @@ namespace Box2DX.Common
 		/// </summary>
 		public void Set(float angle)
 		{
-			float c = (float)System.Math.Cos(angle), s = (float)System.Math.Sin(angle);
+			float c = Mathf.Cos(angle);
+			float s = Mathf.Sin(angle);
 			Col1.x = c; Col2.x = -s;
 			Col1.y = s; Col2.y = c;
-		}
-
-		/// <summary>
-		/// Set this to the identity matrix.
-		/// </summary>
-		public void SetIdentity()
-		{
-			Col1.x = 1.0f; Col2.x = 0.0f;
-			Col1.y = 0.0f; Col2.y = 1.0f;
-		}
-
-		/// <summary>
-		/// Set this matrix to all zeros.
-		/// </summary>
-		public void SetZero()
-		{
-			Col1.x = 0.0f; Col2.x = 0.0f;
-			Col1.y = 0.0f; Col2.y = 0.0f;
 		}
 
 		/// <summary>
@@ -107,7 +91,7 @@ namespace Box2DX.Common
 		/// </summary>
 		public float GetAngle()
 		{
-			return (float)System.Math.Atan2(Col1.y, Col1.x);
+			return Mathf.Atan2(Col1.y, Col1.x);
 		}
 		
 		public Vector2 Multiply(Vector2 vector) { 

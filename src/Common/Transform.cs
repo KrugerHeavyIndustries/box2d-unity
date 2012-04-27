@@ -48,7 +48,7 @@ namespace Box2DX.Common
 		}
 		
 		public Vector2 InverseTransformPoint(Vector2 vector) 
-		{
+		{	
 			return Quaternion.Inverse(rotation) * (vector - position);
 		}
 		
@@ -59,7 +59,7 @@ namespace Box2DX.Common
 		
 		public Vector2 TransformPoint(Vector2 vector)
 		{	
-			return (Vector2)(rotation * vector) + position;
+			return position + (Vector2)(rotation * vector) ;
 		}
 	
 		// <summary>

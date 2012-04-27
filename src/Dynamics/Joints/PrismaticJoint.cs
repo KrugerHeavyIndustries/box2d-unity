@@ -549,7 +549,7 @@ namespace Box2DX.Dynamics
 				float impulse = _motorMass * (_motorSpeed - Cdot);
 				float oldImpulse = _motorImpulse;
 				float maxImpulse = step.Dt * _maxMotorForce;
-				_motorImpulse = Box2DX.Common.Math.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
+				_motorImpulse = Mathf.Clamp(_motorImpulse + impulse, -maxImpulse, maxImpulse);
 				impulse = _motorImpulse - oldImpulse;
 
 				Vector2 P = impulse * _axis;
@@ -662,21 +662,21 @@ namespace Box2DX.Dynamics
 				if (Box2DX.Common.Math.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
 				{
 					// Prevent large angular corrections
-					C2 = Box2DX.Common.Math.Clamp(translation, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
+					C2 = Mathf.Clamp(translation, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 					linearError = Box2DX.Common.Math.Abs(translation);
 					active = true;
 				}
 				else if (translation <= _lowerTranslation)
 				{
 					// Prevent large linear corrections and allow some slop.
-					C2 = Box2DX.Common.Math.Clamp(translation - _lowerTranslation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+					C2 = Mathf.Clamp(translation - _lowerTranslation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 					linearError = _lowerTranslation - translation;
 					active = true;
 				}
 				else if (translation >= _upperTranslation)
 				{
 					// Prevent large linear corrections and allow some slop.
-					C2 = Box2DX.Common.Math.Clamp(translation - _upperTranslation - Settings.LinearSlop, 0.0f, Settings.MaxLinearCorrection);
+					C2 = Mathf.Clamp(translation - _upperTranslation - Settings.LinearSlop, 0.0f, Settings.MaxLinearCorrection);
 					linearError = translation - _upperTranslation;
 					active = true;
 				}

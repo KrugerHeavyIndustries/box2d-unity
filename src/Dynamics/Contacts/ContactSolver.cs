@@ -311,7 +311,7 @@ namespace Box2DX.Dynamics
 
 							// b2Clamp the accumulated force
 							float maxFriction = friction * ccp->NormalImpulse;
-							float newImpulse = Common.Math.Clamp(ccp->TangentImpulse + lambda, -maxFriction, maxFriction);
+							float newImpulse = Mathf.Clamp(ccp->TangentImpulse + lambda, -maxFriction, maxFriction);
 							lambda = newImpulse - ccp->TangentImpulse;
 
 							// Apply contact impulse
@@ -688,7 +688,7 @@ namespace Box2DX.Dynamics
 					minSeparation = Common.Math.Min(minSeparation, separation);
 
 					// Prevent large corrections and allow slop.
-					float C = baumgarte * Common.Math.Clamp(separation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
+					float C = baumgarte * Mathf.Clamp(separation + Settings.LinearSlop, -Settings.MaxLinearCorrection, 0.0f);
 
 					// Compute normal impulse
 					float impulse = -c.Points[j].EqualizedMass * C;
