@@ -459,7 +459,7 @@ namespace Box2DX.Dynamics
 		/// to call this again. Note that this changes the center of mass position.
 		/// </summary>
 		public void SetMassFromShapes()
-		{
+		{	
 			Box2DXDebug.Assert(_world._lock == false);
 			if (_world._lock == true)
 			{
@@ -707,8 +707,12 @@ namespace Box2DX.Dynamics
 			{
 				WakeUp();
 			}
+			Debug.Log(string.Format("ApplyForce( force = ({0},{1}), point = ({2},{3}) )", force.x, force.y, point.x, point.y));
+			
 			_force += force;
 			_torque += (point - _sweep.C).Cross(force);
+			
+			Debug.Log(string.Format("_torque = {0}", _torque));
 		}
 
 		/// <summary>
@@ -739,8 +743,11 @@ namespace Box2DX.Dynamics
 			{
 				WakeUp();
 			}
+			Debug.Log(string.Format("ApplyImpulse( impulse = ({0},{1}), point = ({2},{3}) )", impulse.x, impulse.y, point.x, point.y));
 			_linearVelocity += _invMass * impulse;
 			_angularVelocity += _invI * (point - _sweep.C).Cross(impulse);
+			
+			Debug.Log(string.Format("_linearVelocity = ({0},{1}) _angularVelocity = {3}", _linearVelocity.x, _linearVelocity.y, _angularVelocity));
 		}
 
 		/// <summary>
@@ -1058,6 +1065,8 @@ namespace Box2DX.Dynamics
 		{
 			_xf.rotation = QuaternionExtension.FromAngle2D(_sweep.A);
 			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);
+			
+			Debug.Log(string.Format("new position = ({0},{1})", _xf.position.x, _xf.position.y));
 		}
 
 		internal void Advance(float t)

@@ -59,7 +59,7 @@ namespace Box2DX.Common
 		
 		public Vector2 TransformPoint(Vector2 vector)
 		{	
-			return position + (Vector2)(rotation * vector) ;
+			return position + (rotation * vector.ToVector3()).ToVector2();
 		}
 	
 		// <summary>
@@ -67,7 +67,7 @@ namespace Box2DX.Common
 		// </summary>
 		public Vector2 TransformDirection(Vector2 vector) 
 		{ 
-			return rotation * vector;
+			return (rotation * vector.ToVector3()).ToVector2();
 		}
 		
 		public static readonly Transform identity = new Transform(Vector2.zero, Quaternion.identity);

@@ -230,6 +230,8 @@ namespace Box2DX.Dynamics
 				// Integrate velocities.
 				b._linearVelocity += step.Dt * (gravity + b._invMass * b._force);
 				b._angularVelocity += step.Dt * b._invI * b._torque;
+				
+				Debug.Log(string.Format("body linear velocity = ({0},{1}), angular velocity = {2}", b._linearVelocity.x, b._linearVelocity.y, b._angularVelocity));
 
 				// Reset forces.
 				b._force = Vector2.zero;
@@ -281,8 +283,7 @@ namespace Box2DX.Dynamics
 				Vector2 translation = step.Dt * b._linearVelocity;
 				if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
 				{
-					translation.Normalize();
-					b._linearVelocity = (Settings.MaxTranslation * step.Inv_Dt) * translation;
+					b._linearVelocity = (Settings.MaxTranslation * step.Inv_Dt) * translation.normalized;
 				}
 
 				float rotation = step.Dt * b._angularVelocity;
@@ -428,8 +429,7 @@ namespace Box2DX.Dynamics
 				Vector2 translation = subStep.Dt * b._linearVelocity;
 				if (Vector2.Dot(translation, translation) > Settings.MaxTranslationSquared)
 				{
-					translation.Normalize();
-					b._linearVelocity = (Settings.MaxTranslation * subStep.Inv_Dt) * translation;
+					b._linearVelocity = (Settings.MaxTranslation * subStep.Inv_Dt) * translation.normalized;
 				}
 
 				float rotation = subStep.Dt * b._angularVelocity;
