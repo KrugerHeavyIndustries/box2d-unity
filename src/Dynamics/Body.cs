@@ -213,7 +213,7 @@ namespace Box2DX.Dynamics
 			_world = world;
 
 			_xf.position = bd.Position;
-			_xf.rotation = Quaternion.AngleAxis(bd.Angle * Mathf.Deg2Rad, Vector3.forward);
+			_xf.rotation = QuaternionExtension.FromAngle2D(bd.Angle);
 
 			_sweep.LocalCenter = bd.MassData.Center;
 			_sweep.T0 = 1.0f;
@@ -282,7 +282,7 @@ namespace Box2DX.Dynamics
 		internal bool SynchronizeFixtures()
 		{
 			Transform xf1 = new Transform();
-			xf1.rotation = Quaternion.AngleAxis(_sweep.A0 * Mathf.Deg2Rad, Vector3.forward);
+			xf1.rotation = QuaternionExtension.FromAngle2D(_sweep.A0);
 			xf1.position = _sweep.C0 - xf1.TransformDirection(_sweep.LocalCenter);
 
 			bool inRange = true;
@@ -552,7 +552,7 @@ namespace Box2DX.Dynamics
 			_xf.position = position;
 
 			_sweep.C0 = _sweep.C = _xf.TransformPoint(_sweep.LocalCenter);
-			_sweep.A0 = _sweep.A = rotation.eulerAngles.z * Mathf.Rad2Deg;
+			_sweep.A0 = _sweep.A = rotation.eulerAngles.z * Mathf.Deg2Rad;
 
 			bool freeze = false;
 			for (Fixture f = _fixtureList; f != null; f = f.Next)
@@ -610,16 +610,16 @@ namespace Box2DX.Dynamics
 		/// <param name="position">The new position of the body.</param>
 		public void SetPosition(Vector2 position)
 		{
-			SetTransform(position, Quaternion.AngleAxis(GetAngle() * Mathf.Rad2Deg, Vector3.forward));
+			SetTransform(position, QuaternionExtension.FromAngle2D(GetAngle()));
 		}
 
 		/// <summary>
 		/// Set the world body angle.
 		/// </summary>
-		/// <param name="angle">The new angle of the body.</param>
+		/// <param name="angle">The new angle of the body in radians</param>
 		public void SetAngle(float angle)
 		{
-			SetTransform(GetPosition(), Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward));
+			SetTransform(GetPosition(), QuaternionExtension.FromAngle2D(angle));
 		}
 
 		/// <summary>
@@ -1056,7 +1056,7 @@ namespace Box2DX.Dynamics
 
 		internal void SynchronizeTransform()
 		{
-			_xf.rotation = Quaternion.AngleAxis(_sweep.A * Mathf.Rad2Deg, Vector3.forward);
+			_xf.rotation = QuaternionExtension.FromAngle2D(_sweep.A);
 			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);
 		}
 

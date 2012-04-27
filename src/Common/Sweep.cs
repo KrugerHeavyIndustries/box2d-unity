@@ -45,7 +45,7 @@ namespace Box2DX.Common
 			xf = new Transform();
 			xf.position = (1.0f - alpha) * C0 + alpha * C;
 			float angle = (1.0f - alpha) * A0 + alpha * A;
-			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Deg2Rad, Vector3.forward);
+			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 
 			// Shift to origin
 			xf.position -= xf.TransformDirection(LocalCenter);

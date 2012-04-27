@@ -28,12 +28,11 @@ namespace Box2DX.Collision
 {
 	public partial class Collision
 	{
-		public static void CollideCircles(ref Manifold manifold,
-			CircleShape circle1, Transform xf1, CircleShape circle2, Transform xf2)
+		public static void CollideCircles(ref Manifold manifold, CircleShape circle1, Transform xf1, CircleShape circle2, Transform xf2)
 		{
 			manifold.PointCount = 0;
 
-			Vector2 p1 = xf1.TransformPoint(circle1._position); // Common.Math.Mul(xf1, circle1._position);
+			Vector2 p1 = xf1.TransformPoint(circle1._position);
 			Vector2 p2 = xf2.TransformPoint(circle2._position);
 
 			Vector2 d = p2 - p1;
@@ -53,15 +52,13 @@ namespace Box2DX.Collision
 			manifold.Points[0].ID.Key = 0;
 		}
 
-		public static void CollidePolygonAndCircle(ref Manifold manifold,
-			PolygonShape polygon, Transform xf1, CircleShape circle, Transform xf2)
+		public static void CollidePolygonAndCircle(ref Manifold manifold, PolygonShape polygon, Transform xf1, CircleShape circle, Transform xf2)
 		{
 			manifold.PointCount = 0;
 
 			// Compute circle position in the frame of the polygon.
 			Vector2 c = xf2.TransformPoint(circle._position);
-			Vector2 cLocal = xf1.TransformDirection(c);
-			//Vector2 cLocal = Common.Math.MulT(xf1, c);
+			Vector2 cLocal = xf1.InverseTransformPoint(c);
 
 			// Find the min separating edge.
 			int normalIndex = 0;

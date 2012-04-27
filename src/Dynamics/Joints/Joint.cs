@@ -313,7 +313,7 @@ namespace Box2DX.Dynamics
 
 		internal void ComputeTransform(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward);
+			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 			xf.position = center - xf.TransformDirection(localCenter);
 		}
 	}

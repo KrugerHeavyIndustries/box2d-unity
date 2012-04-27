@@ -28,7 +28,6 @@ using Random = UnityEngine.Random;
 
 namespace Box2DX.Common
 {
-	
 	public static class Vector2Extension 
 	{	
 		public static Vector3 ToVector3(this Vector2 vector) 
@@ -68,7 +67,15 @@ namespace Box2DX.Common
 			return new Vector2(vector.x, vector.y);
 		}
 	}
-
+	
+	public static class QuaternionExtension 
+	{
+		public static Quaternion FromAngle2D(float radians) 
+		{ 
+			return Quaternion.AngleAxis(radians * Mathf.Rad2Deg, Vector3.forward);
+		}
+	}
+	
 	public class Math
 	{
 		public static readonly ushort USHRT_MAX = 0xffff;

@@ -144,7 +144,7 @@ namespace Box2DX.Collision
 
 			Transform xf = new Transform();
 			xf.position = center;
-			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Deg2Rad, Vector3.forward);
+			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 
 			// Transform vertices and normals.
 			for (int i = 0; i < _vertexCount; ++i)

@@ -179,7 +179,7 @@ namespace Box2DX.Dynamics
 
 			Transform xf = new Transform();
 			xf.position = center;
-			xf.rotation = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward);
+			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 
 			for (int i = 0; i < VertexCount; ++i)
 			{

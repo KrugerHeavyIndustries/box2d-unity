@@ -33,9 +33,9 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct Transform
 	{
-		public Vector2 position;
-		public Quaternion rotation;
-
+		public Vector2 		position;
+		public Quaternion 	rotation;
+		
 		/// <summary>
 		/// Initialize using a position vector and a rotation matrix.
 		/// </summary>
@@ -46,34 +46,30 @@ namespace Box2DX.Common
 			this.position = position;
 			this.rotation = rotation;
 		}
-
-		/// <summary>
-		/// Set this to the identity transform.
-		/// </summary>
-		public void SetIdentity()
+		
+		public Vector2 InverseTransformPoint(Vector2 vector) 
 		{
-			position = Vector2.zero;
-			rotation = Quaternion.identity;
+			return Quaternion.Inverse(rotation) * (vector - position);
 		}
 		
-		public Vector2 InverseTransformPoint(Vector2 p) 
+		public Vector2 InverseTransformDirection(Vector2 vector)
 		{
-			return Vector2.zero;
+			return Quaternion.Inverse(rotation) * vector;
 		}
 		
-		public Vector2 InverseTransformDirection(Vector2 d)
-		{
-			return Vector2.zero;
-		}
-		
-		public Vector2 TransformPoint(Vector2 p)
+		public Vector2 TransformPoint(Vector2 vector)
 		{	
-			return rotation * p.ToVector3();
+			return (Vector2)(rotation * vector) + position;
+		}
+	
+		// <summary>
+		// Transforms direction from local space to world space.
+		// </summary>
+		public Vector2 TransformDirection(Vector2 vector) 
+		{ 
+			return rotation * vector;
 		}
 		
-		public Vector2 TransformDirection(Vector2 d) 
-		{ 
-			return Vector2.zero;
-		}
+		public static readonly Transform identity = new Transform(Vector2.zero, Quaternion.identity);
 	}
 }
