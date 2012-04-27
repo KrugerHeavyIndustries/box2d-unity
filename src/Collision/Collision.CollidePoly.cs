@@ -44,7 +44,7 @@ namespace Box2DX.Collision
 
 			// Convert normal from poly1's frame into poly2's frame.
 			Vector2 normal1World = xf1.TransformDirection(normals1[edge1]);
-			Vector2 normal1 = xf2.TransformDirection(normal1World); 
+			Vector2 normal1 = xf2.InverseTransformDirection(normal1World); 
 
 			// Find support vertex on poly2 for -normal.
 			int index = 0;
@@ -75,8 +75,7 @@ namespace Box2DX.Collision
 
 			// Vector pointing from the centroid of poly1 to the centroid of poly2.
 			Vector2 d = xf2.TransformPoint(poly2._centroid) - xf1.TransformPoint(poly1._centroid);
-			
-			Vector2 dLocal1 = xf1.TransformDirection(d);
+			Vector2 dLocal1 = xf1.InverseTransformDirection(d);
 
 			// Find edge normal on poly1 that has the largest projection onto d.
 			int edge = 0;
@@ -149,8 +148,7 @@ namespace Box2DX.Collision
 			return bestSeparation;
 		}
 
-		public static void FindIncidentEdge(out ClipVertex[] c,
-			PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
+		public static void FindIncidentEdge(out ClipVertex[] c, PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] normals1 = poly1._normals;
@@ -162,7 +160,7 @@ namespace Box2DX.Collision
 			Box2DXDebug.Assert(0 <= edge1 && edge1 < count1);
 
 			// Get the normal of the reference edge in poly2's frame.
-			Vector2 normal1 = xf2.TransformDirection( xf1.TransformDirection(normals1[edge1]));
+			Vector2 normal1 = xf2.InverseTransformDirection( xf1.TransformDirection(normals1[edge1]) );
 
 			// Find the incident edge on poly2.
 			int index = 0;
@@ -300,7 +298,7 @@ namespace Box2DX.Collision
 				if (separation <= totalRadius)
 				{
 					ManifoldPoint cp = manifold.Points[pointCount];
-					cp.LocalPoint = xf2.TransformDirection(clipPoints2[i].V);//Common.Math.MulT(xf2, clipPoints2[i].V);
+					cp.LocalPoint = xf2.InverseTransformDirection(clipPoints2[i].V);
 					cp.ID = clipPoints2[i].ID;
 					cp.ID.Features.Flip = flip;
 					++pointCount;

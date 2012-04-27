@@ -546,10 +546,10 @@ namespace Box2DX.Collision
 
 				// Compute a tentative new simplex vertex using support points.
 				SimplexVertex* vertex = vertices + simplex._count;
-				vertex->indexA = shapeA.GetSupport(transformA.TransformDirection(p));
-				vertex->wA = transformA.TransformPoint(shapeA.GetVertex(vertex->indexA));//Common.Math.Mul(transformA, shapeA.GetVertex(vertex->indexA));
+				vertex->indexA = shapeA.GetSupport(transformA.InverseTransformDirection(p));
+				vertex->wA = transformA.TransformPoint(shapeA.GetVertex(vertex->indexA));
 				//Vec2 wBLocal;
-				vertex->indexB = shapeB.GetSupport(transformB.TransformDirection(-p)); //Common.Math.MulT(transformB.R, -p));
+				vertex->indexB = shapeB.GetSupport(transformB.InverseTransformDirection(-p));
 				vertex->wB = transformB.TransformPoint(shapeB.GetVertex(vertex->indexB));
 				vertex->w = vertex->wB - vertex->wA;
 

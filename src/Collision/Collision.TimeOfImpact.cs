@@ -117,8 +117,8 @@ namespace Box2DX.Collision
 			{
 				case Type.Points:
 					{
-						Vector2 axisA = transformA.TransformDirection(Axis);
-						Vector2 axisB = transformB.TransformDirection(-Axis);
+						Vector2 axisA = transformA.InverseTransformDirection(Axis);
+						Vector2 axisB = transformB.InverseTransformDirection(-Axis);
 						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
 						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
 						Vector2 pointA = transformA.TransformPoint(localPointA);
@@ -132,7 +132,7 @@ namespace Box2DX.Collision
 						Vector2 normal = transformA.TransformDirection(Axis);
 						Vector2 pointA = transformA.TransformPoint(LocalPoint);
 
-						Vector2 axisB = transformB.TransformDirection(-normal);
+						Vector2 axisB = transformB.InverseTransformDirection(-normal);
 
 						Vector2 localPointB = ShapeB.GetSupportVertex(axisB);
 						Vector2 pointB = transformB.TransformPoint(localPointB);
@@ -146,7 +146,7 @@ namespace Box2DX.Collision
 						Vector2 normal = transformB.TransformDirection(Axis);
 						Vector2 pointB = transformB.TransformPoint(LocalPoint);
 
-						Vector2 axisA = transformA.TransformDirection(-normal);
+						Vector2 axisA = transformA.InverseTransformDirection(-normal);
 
 						Vector2 localPointA = ShapeA.GetSupportVertex(axisA);
 						Vector2 pointA = transformA.TransformPoint(localPointA);

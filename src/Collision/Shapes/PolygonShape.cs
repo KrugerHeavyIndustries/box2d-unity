@@ -167,7 +167,7 @@ namespace Box2DX.Collision
 
 		public override bool TestPoint(Transform xf, Vector2 p)
 		{
-			Vector2 pLocal = xf.TransformDirection(p - xf.position);
+			Vector2 pLocal = xf.InverseTransformDirection(p - xf.position);
 
 			int vc = _vertexCount;
 			for (int i = 0; i < vc; ++i)
@@ -189,8 +189,8 @@ namespace Box2DX.Collision
 
 			float lower = 0.0f, upper = maxLambda;
 
-			Vector2 p1 = xf.TransformDirection(segment.P1 - xf.position);
-			Vector2 p2 = xf.TransformDirection(segment.P2 - xf.position);
+			Vector2 p1 = xf.InverseTransformDirection(segment.P1 - xf.position);
+			Vector2 p2 = xf.InverseTransformDirection(segment.P2 - xf.position);
 			Vector2 d = p2 - p1;
 			int index = -1;
 
@@ -356,7 +356,7 @@ namespace Box2DX.Collision
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform xf, out Vector2 c)
 		{
 			//Transform plane into shape co-ordinates
-			Vector2 normalL = xf.TransformDirection(normal);
+			Vector2 normalL = xf.InverseTransformDirection(normal);
 			float offsetL = offset - Vector2.Dot(normal, xf.position);
 
 			float[] depths = new float[Common.Settings.MaxPolygonVertices];
