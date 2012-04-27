@@ -63,8 +63,6 @@
     <Compile Include="Common\Math.cs" />
     <Compile Include="Common\Settings.cs" />
     <Compile Include="Common\Sweep.cs" />
-    <Compile Include="Common\Vec2.cs" />
-    <Compile Include="Common\Vec3.cs" />
     <Compile Include="Dynamics\Body.cs" />
     <Compile Include="Dynamics\ContactManager.cs" />
     <Compile Include="Dynamics\Contacts\CircleContact.cs" />
