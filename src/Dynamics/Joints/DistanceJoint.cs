@@ -159,8 +159,8 @@ namespace Box2DX.Dynamics
 			Body b2 = _body2;
 
 			// Compute the effective mass matrix.
-			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 			_u = b2._sweep.C + r2 - b1._sweep.C - r1;
 
 			// Handle singularity.
@@ -227,8 +227,8 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 			Vector2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
 
@@ -258,8 +258,8 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vector2 r1 = b1.GetXForm().TransformDirection( _localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetTransform().TransformDirection( _localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 			// Cdot = dot(u, v + cross(w, r))
 			Vector2 v1 = b1._linearVelocity + r1.CrossScalarPreMultiply(b1._angularVelocity);

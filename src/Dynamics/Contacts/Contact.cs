@@ -1,4 +1,4 @@
-﻿/*
+/*
   Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
   Box2D original C++ version Copyright (c) 2006-2009 Erin Catto http://www.gphysics.com
 
@@ -298,7 +298,7 @@ namespace Box2DX.Dynamics
 
 			Box2DXDebug.Assert(CollideShapeFunction!=null);
 
-			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetXForm(), _fixtureB.Shape, bodyB.GetXForm());
+			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetTransform(), _fixtureB.Shape, bodyB.GetTransform());
 		}
 
 		public float ComputeTOI(Sweep sweepA, Sweep sweepB)
@@ -333,7 +333,7 @@ namespace Box2DX.Dynamics
 			Shape shapeA = _fixtureA.Shape;
 			Shape shapeB = _fixtureB.Shape;
 
-			worldManifold.Initialize(_manifold, bodyA.GetXForm(), shapeA._radius, bodyB.GetXForm(), shapeB._radius);
+			worldManifold.Initialize(_manifold, bodyA.GetTransform(), shapeA._radius, bodyB.GetTransform(), shapeB._radius);
 		}
 
 		/// <summary>

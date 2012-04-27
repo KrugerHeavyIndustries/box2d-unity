@@ -1,4 +1,4 @@
-﻿/*
+/*
   Box2DX Copyright (c) 2008 Ihar Kalasouski http://code.google.com/p/box2dx
   Box2D original C++ version Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
 
@@ -273,8 +273,8 @@ namespace Box2DX.Dynamics
 				Body b1 = _body1;
 				Body b2 = _body2;
 
-				Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-				Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 				Vector2 p1 = b1._sweep.C + r1;
 				Vector2 p2 = b2._sweep.C + r2;
 				Vector2 d = p2 - p1;
@@ -423,8 +423,8 @@ namespace Box2DX.Dynamics
 			_localCenter1 = b1.GetLocalCenter();
 			_localCenter2 = b2.GetLocalCenter();
 
-			Transform xf1 = b1.GetXForm();
-			Transform xf2 = b2.GetXForm();
+			Transform xf1 = b1.GetTransform();
+			Transform xf2 = b2.GetTransform();
 
 			// Compute the effective masses.
 			Vector2 r1 = xf1.TransformDirection(_localAnchor1 - _localCenter1);

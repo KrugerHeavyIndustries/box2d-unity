@@ -1,4 +1,4 @@
-﻿/*
+/*
   Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
   Box2D original C++ version Copyright (c) 2006-2009 Erin Catto http://www.gphysics.com
 
@@ -444,7 +444,7 @@ namespace Box2DX.Dynamics
 		/// <returns>The total volume less than offset along normal.</returns>
 		public float ComputeSubmergedArea(Vector2 normal, float offset, out Vector2 c)
 		{
-			return _shape.ComputeSubmergedArea(normal, offset, _body.GetXForm(), out c);
+			return _shape.ComputeSubmergedArea(normal, offset, _body.GetTransform(), out c);
 		}
 
 		/// <summary>
@@ -453,7 +453,7 @@ namespace Box2DX.Dynamics
 		/// <param name="p">A point in world coordinates.</param>
 		public bool TestPoint(Vector2 p)
 		{
-			return _shape.TestPoint(_body.GetXForm(), p);
+			return _shape.TestPoint(_body.GetTransform(), p);
 		}
 
 		/// <summary>
@@ -467,7 +467,7 @@ namespace Box2DX.Dynamics
 		/// <param name="maxLambda">A number typically in the range [0,1].</param>
 		public SegmentCollide TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
-			return _shape.TestSegment(_body.GetXForm(), out lambda, out normal, segment, maxLambda);
+			return _shape.TestSegment(_body.GetTransform(), out lambda, out normal, segment, maxLambda);
 		}
 
 		/// <summary>

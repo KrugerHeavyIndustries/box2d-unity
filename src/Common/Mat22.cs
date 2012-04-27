@@ -32,7 +32,8 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct Mat22
 	{
-		public Vector2 Col1, Col2;
+		public Vector2 Col1;
+		public Vector2 Col2;
 
 		/// <summary>
 		/// Construct this matrix using columns.

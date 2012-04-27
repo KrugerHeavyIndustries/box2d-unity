@@ -535,7 +535,7 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new world rotation angle of the body in radians.</param>
 		/// <returns>Return false if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetXForm(Vector2 position, Quaternion rotation)
+		public bool SetTransform(Vector2 position, Quaternion rotation)
 		{
 			Box2DXDebug.Assert(_world._lock == false);
 			if (_world._lock == true)
@@ -590,16 +590,16 @@ namespace Box2DX.Dynamics
 		/// <param name="xf">The transform of position and angle to set the body to.</param>
 		/// <returns>False if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetXForm(Transform xf)
+		public bool SetTransform(Transform xf)
 		{
-			return SetXForm(xf.position, xf.rotation);
+			return SetTransform(xf.position, xf.rotation);
 		}
 
 		/// <summary>
 		/// Get the body transform for the body's origin.
 		/// </summary>
 		/// <returns>Return the world transform of the body's origin.</returns>
-		public Transform GetXForm()
+		public Transform GetTransform()
 		{
 			return _xf;
 		}
@@ -610,7 +610,7 @@ namespace Box2DX.Dynamics
 		/// <param name="position">The new position of the body.</param>
 		public void SetPosition(Vector2 position)
 		{
-			SetXForm(position, Quaternion.AngleAxis(GetAngle() * Mathf.Rad2Deg, Vector3.forward));
+			SetTransform(position, Quaternion.AngleAxis(GetAngle() * Mathf.Rad2Deg, Vector3.forward));
 		}
 
 		/// <summary>
@@ -619,7 +619,7 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new angle of the body.</param>
 		public void SetAngle(float angle)
 		{
-			SetXForm(GetPosition(), Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward));
+			SetTransform(GetPosition(), Quaternion.AngleAxis(angle * Mathf.Rad2Deg, Vector3.forward));
 		}
 
 		/// <summary>

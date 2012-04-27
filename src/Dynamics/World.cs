@@ -1,4 +1,4 @@
-﻿/*
+/*
   Box2DX Copyright (c) 2009 Ihar Kalasouski http://code.google.com/p/box2dx
   Box2D original C++ version Copyright (c) 2006-2009 Erin Catto http://www.gphysics.com
 
@@ -350,7 +350,7 @@ namespace Box2DX.Dynamics
 				Body b = def.Body1._fixtureCount < def.Body2._fixtureCount ? def.Body1 : def.Body2;
 				for (Fixture f = b._fixtureList; f != null; f = f.Next)
 				{
-					f.RefilterProxy(_broadPhase, b.GetXForm());
+					f.RefilterProxy(_broadPhase, b.GetTransform());
 				}
 			}
 
@@ -442,7 +442,7 @@ namespace Box2DX.Dynamics
 				Body b = body1._fixtureCount < body2._fixtureCount ? body1 : body2;
 				for (Fixture f = b._fixtureList; f != null; f = f.Next)
 				{
-					f.RefilterProxy(_broadPhase, b.GetXForm());
+					f.RefilterProxy(_broadPhase, b.GetTransform());
 				}
 			}
 		}
@@ -519,7 +519,7 @@ namespace Box2DX.Dynamics
 		public void Refilter(Fixture fixture)
 		{
 			Box2DXDebug.Assert(_lock == false);
-			fixture.RefilterProxy(_broadPhase, fixture.Body.GetXForm());
+			fixture.RefilterProxy(_broadPhase, fixture.Body.GetTransform());
 		}
 
 		/// <summary>
@@ -1195,8 +1195,8 @@ namespace Box2DX.Dynamics
 		{
 			Body b1 = joint.GetBody1();
 			Body b2 = joint.GetBody2();
-			Transform xf1 = b1.GetXForm();
-			Transform xf2 = b2.GetXForm();
+			Transform xf1 = b1.GetTransform();
+			Transform xf2 = b2.GetTransform();
 			Vector2 x1 = xf1.position;
 			Vector2 x2 = xf2.position;
 			Vector2 p1 = joint.Anchor1;
@@ -1295,7 +1295,7 @@ namespace Box2DX.Dynamics
 
 				for (Body b = _bodyList; b != null; b = b.GetNext())
 				{
-					Transform xf = b.GetXForm();
+					Transform xf = b.GetTransform();
 					for (Fixture f = b.GetFixtureList(); f != null; f = f.Next)
 					{
 						if (b.IsStatic())
@@ -1411,7 +1411,7 @@ namespace Box2DX.Dynamics
 			{
 				for (Body b = _bodyList; b != null; b = b.GetNext())
 				{
-					Transform xf = b.GetXForm();
+					Transform xf = b.GetTransform();
 					xf.position = b.GetWorldCenter();
 					_debugDraw.DrawXForm(xf);
 				}
