@@ -464,9 +464,9 @@ namespace Box2DX.Dynamics
 				float k23 = i1 * _a1 + i2 * _a2;
 				float k33 = m1 + m2 + i1 * _a1 * _a1 + i2 * _a2 * _a2;
 
-				_K.Col1.Set(k11, k12, k13);
-				_K.Col2.Set(k12, k22, k23);
-				_K.Col3.Set(k13, k23, k33);
+				_K.Col1 = new Vector3(k11, k12, k13);
+				_K.Col2 = new Vector3(k12, k22, k23);
+				_K.Col3 = new Vector3(k13, k23, k33);
 			}
 
 			// Compute motor and limit terms.
@@ -588,16 +588,16 @@ namespace Box2DX.Dynamics
 				}
 
 				// f2(1:2) = invK(1:2,1:2) * (-Cdot(1:2) - K(1:2,3) * (f2(3) - f1(3))) + f1(1:2)
-				Vector2 b = -Cdot1 - (_impulse.z - f1.z) * new Vector2(_K.Col3.X, _K.Col3.Y);
+				Vector2 b = -Cdot1 - (_impulse.z - f1.z) * new Vector2(_K.Col3.x, _K.Col3.y);
 				Vector2 f2r = _K.Solve22(b) + new Vector2(f1.x, f1.y);
-				_impulse.X = f2r.X;
-				_impulse.Y = f2r.Y;
+				_impulse.x = f2r.x;
+				_impulse.y = f2r.y;
 
 				df = _impulse - f1;
 
-				Vector2 P = df.X * _perp + df.Z * _axis;
-				float L1 = df.X * _s1 + df.Y + df.Z * _a1;
-				float L2 = df.X * _s2 + df.Y + df.Z * _a2;
+				Vector2 P = df.x * _perp + df.z * _axis;
+				float L1 = df.x * _s1 + df.y + df.z * _a1;
+				float L2 = df.x * _s2 + df.y + df.z * _a2;
 
 				v1 -= _invMass1 * P;
 				w1 -= _invI1 * L1;
@@ -609,12 +609,12 @@ namespace Box2DX.Dynamics
 			{
 				// Limit is inactive, just solve the prismatic constraint in block form.
 				Vector2 df = _K.Solve22(-Cdot1);
-				_impulse.X += df.X;
-				_impulse.Y += df.Y;
+				_impulse.x += df.x;
+				_impulse.y += df.y;
 
-				Vector2 P = df.X * _perp;
-				float L1 = df.X * _s1 + df.Y;
-				float L2 = df.X * _s2 + df.Y;
+				Vector2 P = df.x * _perp;
+				float L1 = df.x * _s1 + df.y;
+				float L2 = df.x * _s2 + df.y;
 
 				v1 -= _invMass1 * P;
 				w1 -= _invI1 * L1;
@@ -655,8 +655,8 @@ namespace Box2DX.Dynamics
 			{
 				_axis = Box2DX.Common.Math.Mul(R1, _localXAxis1);
 
-				_a1 = Vector2.Cross(d + r1, _axis);
-				_a2 = Vector2.Cross(r2, _axis);
+				_a1 = (d + r1).Cross(_axis);
+				_a2 = r2.Cross(_axis);
 
 				float translation = Vector2.Dot(_axis, d);
 				if (Box2DX.Common.Math.Abs(_upperTranslation - _lowerTranslation) < 2.0f * Settings.LinearSlop)
@@ -684,16 +684,16 @@ namespace Box2DX.Dynamics
 
 			_perp = Box2DX.Common.Math.Mul(R1, _localYAxis1);
 
-			_s1 = Vector2.Cross(d + r1, _perp);
-			_s2 = Vector2.Cross(r2, _perp);
+			_s1 = (d + r1).Cross(_perp);
+			_s2 = r2.Cross(_perp);
 
-			Vec3 impulse;
+			Vector3 impulse;
 			Vector2 C1 = new Vector2();
-			C1.X = Vector2.Dot(_perp, d);
-			C1.Y = a2 - a1 - _refAngle;
+			C1.x = Vector2.Dot(_perp, d);
+			C1.y = a2 - a1 - _refAngle;
 
-			linearError = Box2DX.Common.Math.Max(linearError, Box2DX.Common.Math.Abs(C1.X));
-			angularError = Box2DX.Common.Math.Abs(C1.Y);
+			linearError = Box2DX.Common.Math.Max(linearError, Box2DX.Common.Math.Abs(C1.x));
+			angularError = Box2DX.Common.Math.Abs(C1.y);
 
 			if (active)
 			{
@@ -707,14 +707,14 @@ namespace Box2DX.Dynamics
 				float k23 = i1 * _a1 + i2 * _a2;
 				float k33 = m1 + m2 + i1 * _a1 * _a1 + i2 * _a2 * _a2;
 
-				_K.Col1.Set(k11, k12, k13);
-				_K.Col2.Set(k12, k22, k23);
-				_K.Col3.Set(k13, k23, k33);
+				_K.Col1 = new Vector3(k11, k12, k13);
+				_K.Col2 = new Vector3(k12, k22, k23);
+				_K.Col3 = new Vector3(k13, k23, k33);
 
 				Vector3 C = new Vector3();
-				C.X = C1.X;
-				C.Y = C1.Y;
-				C.Z = C2;
+				C.x = C1.x;
+				C.y = C1.y;
+				C.z = C2;
 
 				impulse = _K.Solve33(-C);
 			}
@@ -727,18 +727,18 @@ namespace Box2DX.Dynamics
 				float k12 = i1 * _s1 + i2 * _s2;
 				float k22 = i1 + i2;
 
-				_K.Col1.Set(k11, k12, 0.0f);
-				_K.Col2.Set(k12, k22, 0.0f);
+				_K.Col1 = new Vector3(k11, k12, 0.0f);
+				_K.Col2 = new Vector3(k12, k22, 0.0f);
 
 				Vector2 impulse1 = _K.Solve22(-C1);
-				impulse.X = impulse1.X;
-				impulse.Y = impulse1.Y;
-				impulse.Z = 0.0f;
+				impulse.x = impulse1.x;
+				impulse.y = impulse1.y;
+				impulse.z = 0.0f;
 			}
 
-			Vector2 P = impulse.X * _perp + impulse.Z * _axis;
-			float L1 = impulse.X * _s1 + impulse.Y + impulse.Z * _a1;
-			float L2 = impulse.X * _s2 + impulse.Y + impulse.Z * _a2;
+			Vector2 P = impulse.x * _perp + impulse.z * _axis;
+			float L1 = impulse.x * _s1 + impulse.y + impulse.z * _a1;
+			float L2 = impulse.x * _s2 + impulse.y + impulse.z * _a2;
 
 			c1 -= _invMass1 * P;
 			a1 -= _invI1 * L1;

@@ -32,12 +32,12 @@ namespace Box2DX.Common
 	/// </summary>
 	public struct Mat22
 	{
-		public Vec2 Col1, Col2;
+		public Vector2 Col1, Col2;
 
 		/// <summary>
 		/// Construct this matrix using columns.
 		/// </summary>
-		public Mat22(Vec2 c1, Vec2 c2)
+		public Mat22(Vector2 c1, Vector2 c2)
 		{
 			Col1 = c1;
 			Col2 = c2;
@@ -48,8 +48,8 @@ namespace Box2DX.Common
 		/// </summary>
 		public Mat22(float a11, float a12, float a21, float a22)
 		{
-			Col1.X = a11; Col1.Y = a21;
-			Col2.X = a12; Col2.Y = a22;
+			Col1.x = a11; Col1.y = a21;
+			Col2.x = a12; Col2.y = a22;
 		}
 
 		/// <summary>
@@ -59,14 +59,14 @@ namespace Box2DX.Common
 		public Mat22(float angle)
 		{
 			float c = (float)Mathf.Cos(angle), s = (float)Mathf.Sin(angle);
-			Col1.X = c; Col2.X = -s;
-			Col1.Y = s; Col2.Y = c;
+			Col1.x = c; Col2.x = -s;
+			Col1.y = s; Col2.y = c;
 		}
 
 		/// <summary>
 		/// Initialize this matrix using columns.
 		/// </summary>
-		public void Set(Vec2 c1, Vec2 c2)
+		public void Set(Vector2 c1, Vector2 c2)
 		{
 			Col1 = c1;
 			Col2 = c2;
@@ -79,8 +79,8 @@ namespace Box2DX.Common
 		public void Set(float angle)
 		{
 			float c = (float)System.Math.Cos(angle), s = (float)System.Math.Sin(angle);
-			Col1.X = c; Col2.X = -s;
-			Col1.Y = s; Col2.Y = c;
+			Col1.x = c; Col2.x = -s;
+			Col1.y = s; Col2.y = c;
 		}
 
 		/// <summary>
@@ -88,8 +88,8 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetIdentity()
 		{
-			Col1.X = 1.0f; Col2.X = 0.0f;
-			Col1.Y = 0.0f; Col2.Y = 1.0f;
+			Col1.x = 1.0f; Col2.x = 0.0f;
+			Col1.y = 0.0f; Col2.y = 1.0f;
 		}
 
 		/// <summary>
@@ -97,8 +97,8 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetZero()
 		{
-			Col1.X = 0.0f; Col2.X = 0.0f;
-			Col1.Y = 0.0f; Col2.Y = 0.0f;
+			Col1.x = 0.0f; Col2.x = 0.0f;
+			Col1.y = 0.0f; Col2.y = 0.0f;
 		}
 
 		/// <summary>
@@ -106,11 +106,11 @@ namespace Box2DX.Common
 		/// </summary>
 		public float GetAngle()
 		{
-			return (float)System.Math.Atan2(Col1.Y, Col1.X);
+			return (float)System.Math.Atan2(Col1.y, Col1.x);
 		}
 		
 		public Vector2 Multiply(Vector2 vector) { 
-			return new Vector2(Col1.X * vector.x + Col2.X * vector.y, Col1.Y * vector.x + Col2.Y * vector.y);
+			return new Vector2(Col1.x * vector.x + Col2.x * vector.y, Col1.y * vector.x + Col2.y * vector.y);
 		}
 		
 		/// <summary>
@@ -118,13 +118,13 @@ namespace Box2DX.Common
 		/// </summary>
 		public Mat22 GetInverse()
 		{
-			float a = Col1.X, b = Col2.X, c = Col1.Y, d = Col2.Y;
+			float a = Col1.x, b = Col2.x, c = Col1.y, d = Col2.y;
 			Mat22 B = new Mat22();
 			float det = a * d - b * c;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			B.Col1.X = det * d; B.Col2.X = -det * b;
-			B.Col1.Y = -det * c; B.Col2.Y = det * a;
+			B.Col1.x = det * d; B.Col2.x = -det * b;
+			B.Col1.y = -det * c; B.Col2.y = det * a;
 			return B;
 		}
 
@@ -134,7 +134,7 @@ namespace Box2DX.Common
 		/// </summary>
 		public Vector2 Solve(Vector2 b)
 		{
-			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
+			float a11 = Col1.x, a12 = Col2.x, a21 = Col1.y, a22 = Col2.y;
 			float det = a11 * a22 - a12 * a21;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;

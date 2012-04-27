@@ -147,11 +147,9 @@ namespace Box2DX.Common
 			return a > 0.0f ? a : -a;
 		}
 
-		public static Vec2 Abs(Vec2 a)
+		public static Vector2 Abs(Vector2 a)
 		{
-			Vec2 b = new Vec2();
-			b.Set(Math.Abs(a.X), Math.Abs(a.Y));
-			return b;
+			return new Vector2(Mathf.Abs(a.x), Mathf.Abs(a.y));
 		}
 
 		public static Mat22 Abs(Mat22 A)
@@ -217,22 +215,18 @@ namespace Box2DX.Common
 		/// Multiply a matrix times a vector. If a rotation matrix is provided,
 		/// then this transforms the vector from one frame to another.
 		/// </summary>
-		public static Vec2 Mul(Mat22 A, Vec2 v)
+		public static Vector2 Mul(Mat22 A, Vector2 v)
 		{
-			Vec2 u = new Vec2();
-			u.Set(A.Col1.X * v.X + A.Col2.X * v.Y, A.Col1.Y * v.X + A.Col2.Y * v.Y);
-			return u;
+			return new Vector2(A.Col1.x * v.x + A.Col2.x * v.y, A.Col1.y * v.x + A.Col2.y * v.y);
 		}
 
 		/// <summary>
 		/// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
 		/// then this transforms the vector from one frame to another (inverse transform).
 		/// </summary>
-		public static Vec2 MulT(Mat22 A, Vec2 v)
+		public static Vector2 MulT(Mat22 A, Vector2 v)
 		{
-			Vec2 u = new Vec2();
-			u.Set(Vec2.Dot(v, A.Col1), Vec2.Dot(v, A.Col2));
-			return u;
+			return new Vector2(Vector2.Dot(v, A.Col1), Vector2.Dot(v, A.Col2));
 		}
 
 		/// <summary>
@@ -250,22 +244,18 @@ namespace Box2DX.Common
 		/// </summary>
 		public static Mat22 MulT(Mat22 A, Mat22 B)
 		{
-			Vec2 c1 = new Vec2();
-			c1.Set(Vec2.Dot(A.Col1, B.Col1), Vec2.Dot(A.Col2, B.Col1));
-			Vec2 c2 = new Vec2();
-			c2.Set(Vec2.Dot(A.Col1, B.Col2), Vec2.Dot(A.Col2, B.Col2));
-			Mat22 C = new Mat22();
-			C.Set(c1, c2);
-			return C;
+			Vector2 c1 = new Vector2(Vector2.Dot(A.Col1, B.Col1), Vector2.Dot(A.Col2, B.Col1));
+			Vector2 c2 = new Vector2(Vector2.Dot(A.Col1, B.Col2), Vector2.Dot(A.Col2, B.Col2));
+			return new Mat22(c1, c2);
 		}
 		
 		/*
-		public static Vec2 Mul(XForm T, Vec2 v)
+		public static Vector2 Mul(XForm T, Vector2 v)
 		{
 			return T.Position + Math.Mul(T.R, v);
 		}
 
-		public static Vec2 MulT(XForm T, Vec2 v)
+		public static Vector2 MulT(XForm T, Vector2 v)
 		{
 			return Math.MulT(T.R, v - T.Position);
 		}
@@ -274,10 +264,9 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Multiply a matrix times a vector.
 		/// </summary>
-		public static Vec3 Mul(Mat33 A, Vec3 v)
+		public static Vector3 Mul(Mat33 A, Vector3 v)
 		{
-			Vec3 u = v.X * A.Col1 + v.Y * A.Col2 + v.Z * A.Col3;
-			return u;
+			return v.x * A.Col1 + v.y * A.Col2 + v.z * A.Col3;
 		}
 
 		public static float Atan2(float y, float x)

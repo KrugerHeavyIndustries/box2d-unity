@@ -175,16 +175,16 @@ namespace Box2DX.Dynamics
 			float invI = b._invI;
 
 			Mat22 K1 = new Mat22();
-			K1.Col1.X = invMass; K1.Col2.X = 0.0f;
-			K1.Col1.Y = 0.0f; K1.Col2.Y = invMass;
+			K1.Col1.x = invMass; K1.Col2.x = 0.0f;
+			K1.Col1.y = 0.0f; K1.Col2.y = invMass;
 
 			Mat22 K2 = new Mat22();
-			K2.Col1.X = invI * r.y * r.y; K2.Col2.X = -invI * r.x * r.y;
-			K2.Col1.Y = -invI * r.x * r.y; K2.Col2.Y = invI * r.x * r.x;
+			K2.Col1.x = invI * r.y * r.y; K2.Col2.x = -invI * r.x * r.y;
+			K2.Col1.y = -invI * r.x * r.y; K2.Col2.y = invI * r.x * r.x;
 
 			Mat22 K = K1 + K2;
-			K.Col1.X += _gamma;
-			K.Col2.Y += _gamma;
+			K.Col1.x += _gamma;
+			K.Col2.y += _gamma;
 
 			_mass = K.GetInverse();
 

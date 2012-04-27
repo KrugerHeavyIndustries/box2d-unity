@@ -25,6 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using UnityEngine;
+
 namespace Box2DX.Common
 {
 	/// <summary>
@@ -35,7 +37,7 @@ namespace Box2DX.Common
 		/// <summary>
 		/// Construct this matrix using columns.
 		/// </summary>
-		public Mat33(Vec3 c1, Vec3 c2, Vec3 c3)
+		public Mat33(Vector3 c1, Vector3 c2, Vector3 c3)
 		{
 			Col1 = c1;
 			Col2 = c2;
@@ -47,24 +49,24 @@ namespace Box2DX.Common
 		/// </summary>
 		public void SetZero()
 		{
-			Col1.SetZero();
-			Col2.SetZero();
-			Col3.SetZero();
+			Col1 = Vector3.zero;
+			Col2 = Vector3.zero;
+			Col3 = Vector3.zero;
 		}
 
 		/// <summary>
 		/// Solve A * x = b, where b is a column vector. This is more efficient
 		/// than computing the inverse in one-shot cases.
 		/// </summary>
-		public Vec3 Solve33(Vec3 b)
+		public Vector3 Solve33(Vector3 b)
 		{
-			float det = Vec3.Dot(Col1, Vec3.Cross(Col2, Col3));
+			float det = Vector3.Dot(Col1, Vector3.Cross(Col2, Col3));
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec3 x = new Vec3();
-			x.X = det * Vec3.Dot(b, Vec3.Cross(Col2, Col3));
-			x.Y = det * Vec3.Dot(Col1, Vec3.Cross(b, Col3));
-			x.Z = det * Vec3.Dot(Col1, Vec3.Cross(Col2, b));
+			Vector3 x = new Vector3();
+			x.x = det * Vector3.Dot(b, Vector3.Cross(Col2, Col3));
+			x.y = det * Vector3.Dot(Col1, Vector3.Cross(b, Col3));
+			x.z = det * Vector3.Dot(Col1, Vector3.Cross(Col2, b));
 			return x;
 		}
 
@@ -73,18 +75,20 @@ namespace Box2DX.Common
 		/// than computing the inverse in one-shot cases. Solve only the upper
 		/// 2-by-2 matrix equation.
 		/// </summary>
-		public Vec2 Solve22(Vec2 b)
+		public Vector2 Solve22(Vector2 b)
 		{
-			float a11 = Col1.X, a12 = Col2.X, a21 = Col1.Y, a22 = Col2.Y;
+			float a11 = Col1.x, a12 = Col2.x, a21 = Col1.y, a22 = Col2.y;
 			float det = a11 * a22 - a12 * a21;
 			Box2DXDebug.Assert(det != 0.0f);
 			det = 1.0f / det;
-			Vec2 x = new Vec2();
-			x.X = det * (a22 * b.X - a12 * b.Y);
-			x.Y = det * (a11 * b.Y - a21 * b.X);
+			Vector2 x = new Vector2();
+			x.x = det * (a22 * b.x - a12 * b.y);
+			x.y = det * (a11 * b.y - a21 * b.x);
 			return x;
 		}
 
-		public Vec3 Col1, Col2, Col3;
+		public Vector3 Col1;
+		public Vector3 Col2;
+		public Vector3 Col3;
 	}
 }

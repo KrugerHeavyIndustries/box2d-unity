@@ -203,8 +203,8 @@ namespace Box2DX.Dynamics
 							if (k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12))
 							{
 								// K is safe to invert.
-								cc.K.Col1.Set(k11, k12);
-								cc.K.Col2.Set(k12, k22);
+								cc.K.Col1 = new Vector2(k11, k12);
+								cc.K.Col2 = new Vector2(k12, k22);
 								cc.NormalMass = cc.K.GetInverse();
 							}
 							else
@@ -456,7 +456,7 @@ namespace Box2DX.Dynamics
 								x.x = -cp1->NormalMass * b.x;
 								x.y = 0.0f;
 								vn1 = 0.0f;
-								vn2 = c.K.Col1.Y * x.x + b.y;
+								vn2 = c.K.Col1.y * x.x + b.y;
 
 								if (x.x >= 0.0f && vn2 >= 0.0f)
 								{
@@ -497,7 +497,7 @@ namespace Box2DX.Dynamics
 								//
 								x.x = 0.0f;
 								x.y = -cp2->NormalMass * b.y;
-								vn1 = c.K.Col2.X * x.y + b.x;
+								vn1 = c.K.Col2.x * x.y + b.x;
 								vn2 = 0.0f;
 
 								if (x.y >= 0.0f && vn1 >= 0.0f)

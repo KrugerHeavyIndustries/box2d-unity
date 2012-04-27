@@ -436,8 +436,8 @@ namespace Box2DX.Dynamics
 				float k12 = i1 * _s1 * _a1 + i2 * _s2 * _a2;
 				float k22 = m1 + m2 + i1 * _a1 * _a1 + i2 * _a2 * _a2;
 
-				_K.Col1.Set(k11, k12);
-				_K.Col2.Set(k12, k22);
+				_K.Col1 = new Vector2(k11, k12);
+				_K.Col2 = new Vector2(k12, k22);
 			}
 
 			// Compute motor and limit terms.
@@ -556,8 +556,8 @@ namespace Box2DX.Dynamics
 				}
 
 				// f2(1) = invK(1,1) * (-Cdot(1) - K(1,2) * (f2(2) - f1(2))) + f1(1)
-				float b = -Cdot1 - (_impulse.y - f1.y) * _K.Col2.X;
-				float f2r = b / _K.Col1.X + f1.x;
+				float b = -Cdot1 - (_impulse.y - f1.y) * _K.Col2.x;
+				float f2r = b / _K.Col1.x + f1.x;
 				_impulse.x = f2r;
 
 				df = _impulse - f1;
@@ -575,7 +575,7 @@ namespace Box2DX.Dynamics
 			else
 			{
 				// Limit is inactive, just solve the prismatic constraint in block form.
-				float df = (-Cdot1) / _K.Col1.X;
+				float df = (-Cdot1) / _K.Col1.x;
 				_impulse.x += df;
 
 				Vector2 P = df * _perp;
@@ -669,8 +669,8 @@ namespace Box2DX.Dynamics
 				float k12 = i1 * _s1 * _a1 + i2 * _s2 * _a2;
 				float k22 = m1 + m2 + i1 * _a1 * _a1 + i2 * _a2 * _a2;
 
-				_K.Col1.Set(k11, k12);
-				_K.Col2.Set(k12, k22);
+				_K.Col1 = new Vector2(k11, k12);
+				_K.Col2 = new Vector2(k12, k22);
 
 				Vector2 C = new Vector2();
 				C.x = C1;
