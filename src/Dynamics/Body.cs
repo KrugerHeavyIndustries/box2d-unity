@@ -186,7 +186,11 @@ namespace Box2DX.Dynamics
 		internal float _sleepTime;
 
 		private object _userData;
-
+		
+		public int bodyID;
+		
+		static int bodyCount = 0;
+		
 		internal Body(BodyDef bd, World world)
 		{
 			Box2DXDebug.Assert(world._lock == false);
@@ -271,6 +275,8 @@ namespace Box2DX.Dynamics
 
 			//_fixtureList = null;
 			//_fixtureCount = 0;
+			
+			bodyID = bodyCount++;
 		}
 
 		public void Dispose()
@@ -1066,7 +1072,7 @@ namespace Box2DX.Dynamics
 			_xf.rotation = QuaternionExtension.FromAngle2D(_sweep.A);
 			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);
 			
-			Debug.Log(string.Format("new position = ({0},{1})", _xf.position.x, _xf.position.y));
+			Debug.Log(string.Format("SynchronizeTransform(body {0}): new position = ({1},{2})", bodyID, _xf.position.x, _xf.position.y));
 		}
 
 		internal void Advance(float t)

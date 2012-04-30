@@ -32,7 +32,7 @@ namespace Box2DX.Collision
 		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, Transform transformA, CircleShape circle, Transform transformB)
 		{
 			manifold.PointCount = 0;
-			Vector2 cLocal = transformA.TransformDirection( transformB.TransformPoint(circle._position) );
+			Vector2 cLocal = transformA.InverseTransformDirection( transformB.TransformPoint(circle._position) );
 			Vector2 normal = edge._normal;
 			Vector2 v1 = edge._v1;
 			Vector2 v2 = edge._v2;

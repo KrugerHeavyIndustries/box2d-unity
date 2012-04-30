@@ -298,7 +298,7 @@ namespace Box2DX.Collision
 				if (separation <= totalRadius)
 				{
 					ManifoldPoint cp = manifold.Points[pointCount];
-					cp.LocalPoint = xf2.InverseTransformDirection(clipPoints2[i].V);
+					cp.LocalPoint = xf2.InverseTransformPoint(clipPoints2[i].V);
 					cp.ID = clipPoints2[i].ID;
 					cp.ID.Features.Flip = flip;
 					++pointCount;
