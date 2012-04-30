@@ -624,7 +624,11 @@ namespace Box2DX.Dynamics
 		/// <param name="position">The new position of the body.</param>
 		public void SetPosition(Vector2 position)
 		{
+#if USE_MATRIX_FOR_ROTATION
+			SetXForm(position, new Mat22(GetAngle()));
+#else
 			SetXForm(position, QuaternionExtension.FromAngle2D(GetAngle()));
+#endif
 		}
 
 		/// <summary>
@@ -633,7 +637,11 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new angle of the body in radians</param>
 		public void SetAngle(float angle)
 		{
+#if USE_MATRIX_FOR_ROTATION
+			SetXForm(GetPosition(), new Mat22(angle));
+#else
 			SetXForm(GetPosition(), QuaternionExtension.FromAngle2D(angle));
+#endif
 		}
 
 		/// <summary>

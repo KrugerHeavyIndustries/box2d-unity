@@ -57,7 +57,7 @@ namespace Box2DX.Common
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="R"></param>
-		public XForm(Vector2 position, Quaternion rotation)
+		public Transform(Vector2 position, Quaternion rotation)
 		{
 			this.position = position;
 			this.rotation = rotation;
