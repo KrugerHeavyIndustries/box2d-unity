@@ -181,7 +181,7 @@ namespace Box2DX.Dynamics
 			xf.position = center;
 			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 			
-			Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
+			//Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
 
 			for (int i = 0; i < VertexCount; ++i)
 			{

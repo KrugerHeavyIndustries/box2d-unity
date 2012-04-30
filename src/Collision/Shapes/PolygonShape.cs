@@ -146,7 +146,7 @@ namespace Box2DX.Collision
 			xf.position = center;
 			xf.rotation = QuaternionExtension.FromAngle2D(angle);
 			
-			Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
+			//Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
 
 			// Transform vertices and normals.
 			for (int i = 0; i < _vertexCount; ++i)
@@ -353,8 +353,6 @@ namespace Box2DX.Collision
 
 			// Inertia tensor relative to the local origin.
 			massData.I = denstity * I;
-			
-			Debug.Log("MassComputed = " + massData.Mass);
 		}
 
 		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform xf, out Vector2 c)

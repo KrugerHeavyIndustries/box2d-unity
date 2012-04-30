@@ -34,8 +34,24 @@ namespace Box2DX.Common
 	public struct Transform
 	{
 		public Vector2 		position;
+#if USE_MATRIX_FOR_ROTATION
+		public Mat22 		rotation;
+#else	
 		public Quaternion 	rotation;
+#endif 
 		
+#if USE_MATRIX_FOR_ROTATION
+		/// <summary>
+		/// Initialize using a position vector and a rotation matrix.
+		/// </summary>
+		/// <param name="position"></param>
+		/// <param name="R"></param>
+		public Transform(Vector2 position, Mat22 rotation)
+		{
+			this.position = position;
+			this.rotation = rotation;
+		}
+#else 
 		/// <summary>
 		/// Initialize using a position vector and a rotation matrix.
 		/// </summary>
@@ -46,20 +62,34 @@ namespace Box2DX.Common
 			this.position = position;
 			this.rotation = rotation;
 		}
+#endif 
 		
 		public Vector2 InverseTransformPoint(Vector2 vector) 
 		{	
+#if USE_MATRIX_FOR_ROTATION
+			return Math.MulT(rotation, vector - position);
+#else
 			return Quaternion.Inverse(rotation) * (vector - position);
+#endif
 		}
 		
 		public Vector2 InverseTransformDirection(Vector2 vector)
 		{
+#if USE_MATRIX_FOR_ROTATION
+			return Math.MulT(rotation, vector);
+#else
 			return Quaternion.Inverse(rotation) * vector;
+#endif
 		}
 		
 		public Vector2 TransformPoint(Vector2 vector)
 		{	
+#if USE_MATRIX_FOR_ROTATION
+			 return position + Math.Mul(rotation, vector);
+#else
 			return position + (rotation * vector.ToVector3()).ToVector2();
+#endif
+			
 		}
 	
 		// <summary>
@@ -67,9 +97,17 @@ namespace Box2DX.Common
 		// </summary>
 		public Vector2 TransformDirection(Vector2 vector) 
 		{ 
+#if USE_MATRIX_FOR_ROTATION
+			return Math.Mul(rotation, vector);
+#else
 			return (rotation * vector.ToVector3()).ToVector2();
+#endif
 		}
 		
+#if USE_MATRIX_FOR_ROTATION
+		public static readonly Transform identify = new Transform(Vector2.zero, Mat22.Identity);
+#else 
 		public static readonly Transform identity = new Transform(Vector2.zero, Quaternion.identity);
+#endif 
 	}
 }

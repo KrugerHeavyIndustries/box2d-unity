@@ -531,7 +531,8 @@ namespace Box2DX.Dynamics
 				}
 			}
 		}
-
+		
+#if USE_MATRIX_FOR_ROTATION
 		/// <summary>
 		/// Set the position of the body's origin and rotation (radians).
 		/// This breaks any contacts and wakes the other bodies.
@@ -541,7 +542,10 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new world rotation angle of the body in radians.</param>
 		/// <returns>Return false if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
+		public bool SetTransform(Vector2 position, Mat22 rotation)
+#else
 		public bool SetTransform(Vector2 position, Quaternion rotation)
+#endif
 		{
 			Box2DXDebug.Assert(_world._lock == false);
 			if (_world._lock == true)
@@ -558,7 +562,11 @@ namespace Box2DX.Dynamics
 			_xf.position = position;
 
 			_sweep.C0 = _sweep.C = _xf.TransformPoint(_sweep.LocalCenter);
+#if USE_MATRIX_FOR_ROTATION
+			_sweep.A0 = _sweep.A = rotation.GetAngle();
+#else
 			_sweep.A0 = _sweep.A = rotation.eulerAngles.z * Mathf.Deg2Rad;
+#endif
 
 			bool freeze = false;
 			for (Fixture f = _fixtureList; f != null; f = f.Next)
@@ -713,12 +721,9 @@ namespace Box2DX.Dynamics
 			{
 				WakeUp();
 			}
-			Debug.Log(string.Format("ApplyForce( force = ({0},{1}), point = ({2},{3}) )", force.x, force.y, point.x, point.y));
 			
 			_force += force;
 			_torque += (point - _sweep.C).Cross(force);
-			
-			Debug.Log(string.Format("_torque = {0}", _torque));
 		}
 
 		/// <summary>
@@ -749,11 +754,9 @@ namespace Box2DX.Dynamics
 			{
 				WakeUp();
 			}
-			Debug.Log(string.Format("ApplyImpulse( impulse = ({0},{1}), point = ({2},{3}) )", impulse.x, impulse.y, point.x, point.y));
+		
 			_linearVelocity += _invMass * impulse;
 			_angularVelocity += _invI * (point - _sweep.C).Cross(impulse);
-			
-			Debug.Log(string.Format("_linearVelocity = ({0},{1}) _angularVelocity = {3}", _linearVelocity.x, _linearVelocity.y, _angularVelocity));
 		}
 
 		/// <summary>
@@ -1071,8 +1074,6 @@ namespace Box2DX.Dynamics
 		{
 			_xf.rotation = QuaternionExtension.FromAngle2D(_sweep.A);
 			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);
-			
-			Debug.Log(string.Format("SynchronizeTransform(body {0}): new position = ({1},{2})", bodyID, _xf.position.x, _xf.position.y));
 		}
 
 		internal void Advance(float t)

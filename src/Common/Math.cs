@@ -70,10 +70,17 @@ namespace Box2DX.Common
 	
 	public static class QuaternionExtension 
 	{
+#if USE_MATRIX_FOR_ROTATION
+		public static Mat22 FromAngle2D(float radians)
+		{
+			return new Mat22(radians);
+		}
+#else
 		public static Quaternion FromAngle2D(float radians) 
 		{ 
 			return Quaternion.AngleAxis(radians * Mathf.Rad2Deg, Vector3.forward);
 		}
+#endif
 	}
 	
 	public class Math
