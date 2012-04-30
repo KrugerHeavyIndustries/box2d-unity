@@ -78,6 +78,7 @@ namespace Box2DX.Collision
 
 			_direction = _v2 - _v1;
 			_length = _direction.magnitude;
+			_direction.Normalize();
 			_normal = _direction.CrossScalarPostMultiply(1.0f);
 
 			_cornerDir1 = _normal;

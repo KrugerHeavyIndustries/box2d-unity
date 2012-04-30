@@ -420,7 +420,7 @@ namespace Box2DX.Collision
 			Vector2 d = input.P2 - input.P1;
 			Vector2 absD = d.Abs();
 
-			Vector2 normal = new Vector2();
+			Vector2 normal = Vector2.zero;
 
 			for (int i = 0; i < 2; ++i)
 			{

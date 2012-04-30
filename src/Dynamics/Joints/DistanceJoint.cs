@@ -233,6 +233,7 @@ namespace Box2DX.Dynamics
 			Vector2 d = b2._sweep.C + r2 - b1._sweep.C - r1;
 
 			float length = d.magnitude;
+			d.Normalize();
 			float C = length - _length;
 			C = Mathf.Clamp(C, -Settings.MaxLinearCorrection, Settings.MaxLinearCorrection);
 
