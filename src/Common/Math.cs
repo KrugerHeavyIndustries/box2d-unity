@@ -205,7 +205,7 @@ namespace Box2DX.Common
 
 		/// <summary>
 		/// Multiply a matrix times a vector. If a rotation matrix is provided,
-		/// then this transforms the vector from one frame to another.
+		/// then this XForms the vector from one frame to another.
 		/// </summary>
 		public static Vector2 Mul(Mat22 A, Vector2 v)
 		{
@@ -214,7 +214,7 @@ namespace Box2DX.Common
 
 		/// <summary>
 		/// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
-		/// then this transforms the vector from one frame to another (inverse transform).
+		/// then this XForms the vector from one frame to another (inverse XForm).
 		/// </summary>
 		public static Vector2 MulT(Mat22 A, Vector2 v)
 		{
@@ -240,19 +240,17 @@ namespace Box2DX.Common
 			Vector2 c2 = new Vector2(Vector2.Dot(A.Col1, B.Col2), Vector2.Dot(A.Col2, B.Col2));
 			return new Mat22(c1, c2);
 		}
-		
-		/*
+	
 		public static Vector2 Mul(XForm T, Vector2 v)
 		{
-			return T.Position + Math.Mul(T.R, v);
+			return T.position + Math.Mul(T.R, v);
 		}
 
 		public static Vector2 MulT(XForm T, Vector2 v)
 		{
-			return Math.MulT(T.R, v - T.Position);
+			return Math.MulT(T.R, v - T.position);
 		}
-		*/
-
+	
 		/// <summary>
 		/// Multiply a matrix times a vector.
 		/// </summary>

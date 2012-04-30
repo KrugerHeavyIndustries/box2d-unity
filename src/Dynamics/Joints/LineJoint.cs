@@ -86,7 +86,7 @@ using System.Text;
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Dynamics
 {
@@ -274,8 +274,8 @@ namespace Box2DX.Dynamics
 			Body b1 = _body1;
 			Body b2 = _body2;
 
-			Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 			Vector2 p1 = b1._sweep.C + r1;
 			Vector2 p2 = b2._sweep.C + r2;
 			Vector2 d = p2 - p1;
@@ -398,8 +398,8 @@ namespace Box2DX.Dynamics
 			_localCenter1 = b1.GetLocalCenter();
 			_localCenter2 = b2.GetLocalCenter();
 
-			Transform xf1 = b1.GetTransform();
-			Transform xf2 = b2.GetTransform();
+			XForm xf1 = b1.GetXForm();
+			XForm xf2 = b2.GetXForm();
 
 			// Compute the effective masses.
 			Vector2 r1 = xf1.TransformDirection(_localAnchor1 - _localCenter1);
@@ -704,8 +704,8 @@ namespace Box2DX.Dynamics
 			b1._sweep.A = a1;
 			b2._sweep.C = c2;
 			b2._sweep.A = a2;
-			b1.SynchronizeTransform();
-			b2.SynchronizeTransform();
+			b1.SynchronizeXForm();
+			b2.SynchronizeXForm();
 
 			return linearError <= Settings.LinearSlop && angularError <= Settings.AngularSlop;
 		}

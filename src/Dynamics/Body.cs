@@ -25,7 +25,7 @@ using Box2DX.Common;
 using Box2DX.Collision;
 
 using UnityEngine;
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Dynamics
 {
@@ -153,7 +153,7 @@ namespace Box2DX.Dynamics
 
 		internal int _islandIndex;
 
-		internal Transform _xf;		// the body origin transform
+		internal XForm _xf;		// the body origin XForm
 
 		internal Sweep _sweep;	// the swept motion for CCD
 
@@ -217,7 +217,7 @@ namespace Box2DX.Dynamics
 			_world = world;
 
 			_xf.position = bd.Position;
-			_xf.rotation = QuaternionExtension.FromAngle2D(bd.Angle);
+			_xf.R = new Mat22(bd.Angle);
 
 			_sweep.LocalCenter = bd.MassData.Center;
 			_sweep.T0 = 1.0f;
@@ -287,8 +287,8 @@ namespace Box2DX.Dynamics
 
 		internal bool SynchronizeFixtures()
 		{
-			Transform xf1 = new Transform();
-			xf1.rotation = QuaternionExtension.FromAngle2D(_sweep.A0);
+			XForm xf1;
+			xf1.R = new Mat22(_sweep.A0);
 			xf1.position = _sweep.C0 - xf1.TransformDirection(_sweep.LocalCenter);
 
 			bool inRange = true;
@@ -542,9 +542,9 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new world rotation angle of the body in radians.</param>
 		/// <returns>Return false if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetTransform(Vector2 position, Mat22 rotation)
+		public bool SetXForm(Vector2 position, Mat22 rotation)
 #else
-		public bool SetTransform(Vector2 position, Quaternion rotation)
+		public bool SetXForm(Vector2 position, Quaternion rotation)
 #endif
 		{
 			Box2DXDebug.Assert(_world._lock == false);
@@ -558,7 +558,7 @@ namespace Box2DX.Dynamics
 				return false;
 			}
 
-			_xf.rotation = rotation;
+			_xf.R = rotation;
 			_xf.position = position;
 
 			_sweep.C0 = _sweep.C = _xf.TransformPoint(_sweep.LocalCenter);
@@ -601,19 +601,19 @@ namespace Box2DX.Dynamics
 		/// Note this is less efficient than the other overload - you should use that
 		/// if the angle is available.
 		/// </summary>
-		/// <param name="xf">The transform of position and angle to set the body to.</param>
+		/// <param name="xf">The XForm of position and angle to set the body to.</param>
 		/// <returns>False if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetTransform(Transform xf)
+		public bool SetXForm(XForm xf)
 		{
-			return SetTransform(xf.position, xf.rotation);
+			return SetXForm(xf.position, xf.R);
 		}
 
 		/// <summary>
-		/// Get the body transform for the body's origin.
+		/// Get the body XForm for the body's origin.
 		/// </summary>
-		/// <returns>Return the world transform of the body's origin.</returns>
-		public Transform GetTransform()
+		/// <returns>Return the world XForm of the body's origin.</returns>
+		public XForm GetXForm()
 		{
 			return _xf;
 		}
@@ -624,7 +624,7 @@ namespace Box2DX.Dynamics
 		/// <param name="position">The new position of the body.</param>
 		public void SetPosition(Vector2 position)
 		{
-			SetTransform(position, QuaternionExtension.FromAngle2D(GetAngle()));
+			SetXForm(position, QuaternionExtension.FromAngle2D(GetAngle()));
 		}
 
 		/// <summary>
@@ -633,7 +633,7 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new angle of the body in radians</param>
 		public void SetAngle(float angle)
 		{
-			SetTransform(GetPosition(), QuaternionExtension.FromAngle2D(angle));
+			SetXForm(GetPosition(), QuaternionExtension.FromAngle2D(angle));
 		}
 
 		/// <summary>
@@ -1070,10 +1070,10 @@ namespace Box2DX.Dynamics
 		/// <returns></returns>
 		public World GetWorld() { return _world; }
 
-		internal void SynchronizeTransform()
+		internal void SynchronizeXForm()
 		{
-			_xf.rotation = QuaternionExtension.FromAngle2D(_sweep.A);
-			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);
+			_xf.R = new Mat22(_sweep.A);
+			_xf.position = _sweep.C - Common.Math.Mul(_xf.R, _sweep.LocalCenter);
 		}
 
 		internal void Advance(float t)
@@ -1082,7 +1082,7 @@ namespace Box2DX.Dynamics
 			_sweep.Advance(t);
 			_sweep.C = _sweep.C0;
 			_sweep.A = _sweep.A0;
-			SynchronizeTransform();
+			SynchronizeXForm();
 		}
 	}
 }

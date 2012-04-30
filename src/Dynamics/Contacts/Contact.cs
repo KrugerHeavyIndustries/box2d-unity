@@ -25,7 +25,7 @@ using Box2DX.Common;
 
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Dynamics
 {
@@ -105,7 +105,7 @@ namespace Box2DX.Dynamics
 		public float _toi;
 
 		internal delegate void CollideShapeDelegate(
-			ref Manifold manifold, Shape circle1, Transform xf1, Shape circle2, Transform xf2);
+			ref Manifold manifold, Shape circle1, XForm xf1, Shape circle2, XForm xf2);
 		internal CollideShapeDelegate CollideShapeFunction;
 
 		public Contact(){}
@@ -298,7 +298,7 @@ namespace Box2DX.Dynamics
 
 			Box2DXDebug.Assert(CollideShapeFunction!=null);
 
-			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetTransform(), _fixtureB.Shape, bodyB.GetTransform());
+			CollideShapeFunction(ref _manifold, _fixtureA.Shape, bodyA.GetXForm(), _fixtureB.Shape, bodyB.GetXForm());
 		}
 
 		public float ComputeTOI(Sweep sweepA, Sweep sweepB)
@@ -333,7 +333,7 @@ namespace Box2DX.Dynamics
 			Shape shapeA = _fixtureA.Shape;
 			Shape shapeB = _fixtureB.Shape;
 
-			worldManifold.Initialize(_manifold, bodyA.GetTransform(), shapeA._radius, bodyB.GetTransform(), shapeB._radius);
+			worldManifold.Initialize(_manifold, bodyA.GetXForm(), shapeA._radius, bodyB.GetXForm(), shapeB._radius);
 		}
 
 		/// <summary>

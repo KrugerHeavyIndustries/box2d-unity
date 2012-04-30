@@ -23,7 +23,7 @@ using System;
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Collision
 {
@@ -524,11 +524,11 @@ namespace Box2DX.Collision
 			return newManifold;
 		}
 
-		/// Evaluate the manifold with supplied transforms. This assumes
+		/// Evaluate the manifold with supplied XForms. This assumes
 		/// modest motion from the original state. This does not change the
 		/// point count, impulses, etc. The radii must come from the shapes
 		/// that generated the manifold.
-		public void Initialize(Manifold manifold, Transform xfA, float radiusA, Transform xfB, float radiusB)
+		public void Initialize(Manifold manifold, XForm xfA, float radiusA, XForm xfB, float radiusB)
 		{
 			if (manifold.PointCount == 0)
 			{

@@ -22,13 +22,11 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
-
 namespace Box2DX.Collision
 {
 	public partial class Collision
 	{
-		public static void CollideCircles(ref Manifold manifold, CircleShape circle1, Transform xf1, CircleShape circle2, Transform xf2)
+		public static void CollideCircles(ref Manifold manifold, CircleShape circle1, XForm xf1, CircleShape circle2, XForm xf2)
 		{
 			manifold.PointCount = 0;
 
@@ -52,7 +50,7 @@ namespace Box2DX.Collision
 			manifold.Points[0].ID.Key = 0;
 		}
 
-		public static void CollidePolygonAndCircle(ref Manifold manifold, PolygonShape polygon, Transform xf1, CircleShape circle, Transform xf2)
+		public static void CollidePolygonAndCircle(ref Manifold manifold, PolygonShape polygon, XForm xf1, CircleShape circle, XForm xf2)
 		{
 			manifold.PointCount = 0;
 
@@ -107,7 +105,7 @@ namespace Box2DX.Collision
 			float u2 = Vector2.Dot(cLocal - v2, v1 - v2);
 			if (u1 <= 0.0f)
 			{
-				if ((cLocal - v1).SqrMagnitude() > radius * radius)
+				if ((cLocal - v1).sqrMagnitude > radius * radius)
 				{
 					return;
 				}
@@ -122,7 +120,7 @@ namespace Box2DX.Collision
 			}
 			else if (u2 <= 0.0f)
 			{
-				if ((cLocal - v2).SqrMagnitude() > radius * radius)
+				if ((cLocal - v2).sqrMagnitude > radius * radius)
 				{
 					return;
 				}

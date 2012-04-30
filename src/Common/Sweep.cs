@@ -37,15 +37,15 @@ namespace Box2DX.Common
 		public float T0; //time interval = [T0,1], where T0 is in [0,1]
 
 		/// <summary>
-		/// Get the interpolated transform at a specific time.
+		/// Get the interpolated XForm at a specific time.
 		/// </summary>
 		/// <param name="alpha">Alpha is a factor in [0,1], where 0 indicates t0.</param>
-		public void GetTransform(out Transform xf, float alpha)
+		public void GetXForm(out XForm xf, float alpha)
 		{
-			xf = new Transform();
+			xf = new XForm();
 			xf.position = (1.0f - alpha) * C0 + alpha * C;
 			float angle = (1.0f - alpha) * A0 + alpha * A;
-			xf.rotation = QuaternionExtension.FromAngle2D(angle);
+			xf.R = new Mat22(angle);
 
 			// Shift to origin
 			xf.position -= xf.TransformDirection(LocalCenter);

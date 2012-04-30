@@ -26,7 +26,7 @@ using Box2DX.Collision;
 using Box2DX.Common;
 
 using UnityEngine;
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Dynamics
 {
@@ -177,9 +177,9 @@ namespace Box2DX.Dynamics
 		{
 			SetAsBox(hx, hy);
 
-			Transform xf = new Transform();
+			XForm xf = new XForm();
 			xf.position = center;
-			xf.rotation = QuaternionExtension.FromAngle2D(angle);
+			xf.R = new Mat22(angle);
 			
 			//Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
 
@@ -213,7 +213,7 @@ namespace Box2DX.Dynamics
 
 	/// <summary>
 	/// A fixture is used to attach a shape to a body for collision detection. A fixture
-	/// inherits its transform from its parent. Fixtures hold additional non-geometric data
+	/// inherits its XForm from its parent. Fixtures hold additional non-geometric data
 	/// such as friction, collision filters, etc.
 	/// Fixtures are created via Body.CreateFixture.
 	/// @warning you cannot reuse fixtures.
@@ -286,7 +286,7 @@ namespace Box2DX.Dynamics
 			_proxyId = PairManager.NullProxy;
 		}
 
-		public void Create(BroadPhase broadPhase, Body body, Transform xf, FixtureDef def)
+		public void Create(BroadPhase broadPhase, Body body, XForm xf, FixtureDef def)
 		{
 			UserData = def.UserData;
 			Friction = def.Friction;
@@ -371,7 +371,7 @@ namespace Box2DX.Dynamics
 			_shape = null;
 		}
 
-		internal bool Synchronize(BroadPhase broadPhase, Transform transform1, Transform transform2)
+		internal bool Synchronize(BroadPhase broadPhase, XForm XForm1, XForm XForm2)
 		{
 			if (_proxyId == PairManager.NullProxy)
 			{
@@ -380,8 +380,8 @@ namespace Box2DX.Dynamics
 
 			// Compute an AABB that covers the swept shape (may miss some rotation effect).
 			AABB aabb1, aabb2;
-			_shape.ComputeAABB(out aabb1, transform1);
-			_shape.ComputeAABB(out aabb2, transform2);
+			_shape.ComputeAABB(out aabb1, XForm1);
+			_shape.ComputeAABB(out aabb2, XForm2);
 
 			AABB aabb = new AABB();
 			aabb.Combine(aabb1, aabb2);
@@ -397,7 +397,7 @@ namespace Box2DX.Dynamics
 			}
 		}
 
-		internal void RefilterProxy(BroadPhase broadPhase, Transform transform)
+		internal void RefilterProxy(BroadPhase broadPhase, XForm XForm)
 		{
 			if (_proxyId == PairManager.NullProxy)
 			{
@@ -407,7 +407,7 @@ namespace Box2DX.Dynamics
 			broadPhase.DestroyProxy(_proxyId);
 
 			AABB aabb;
-			_shape.ComputeAABB(out aabb, transform);
+			_shape.ComputeAABB(out aabb, XForm);
 
 			bool inRange = broadPhase.InRange(aabb);
 
@@ -446,7 +446,7 @@ namespace Box2DX.Dynamics
 		/// <returns>The total volume less than offset along normal.</returns>
 		public float ComputeSubmergedArea(Vector2 normal, float offset, out Vector2 c)
 		{
-			return _shape.ComputeSubmergedArea(normal, offset, _body.GetTransform(), out c);
+			return _shape.ComputeSubmergedArea(normal, offset, _body.GetXForm(), out c);
 		}
 
 		/// <summary>
@@ -455,7 +455,7 @@ namespace Box2DX.Dynamics
 		/// <param name="p">A point in world coordinates.</param>
 		public bool TestPoint(Vector2 p)
 		{
-			return _shape.TestPoint(_body.GetTransform(), p);
+			return _shape.TestPoint(_body.GetXForm(), p);
 		}
 
 		/// <summary>
@@ -469,7 +469,7 @@ namespace Box2DX.Dynamics
 		/// <param name="maxLambda">A number typically in the range [0,1].</param>
 		public SegmentCollide TestSegment(out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
-			return _shape.TestSegment(_body.GetTransform(), out lambda, out normal, segment, maxLambda);
+			return _shape.TestSegment(_body.GetXForm(), out lambda, out normal, segment, maxLambda);
 		}
 
 		/// <summary>

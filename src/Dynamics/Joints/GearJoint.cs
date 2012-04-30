@@ -134,7 +134,7 @@ namespace Box2DX.Dynamics
 		public override float GetReactionTorque(float inv_dt)
 		{
 			// TODO_ERIN not tested
-			Vector2 r = _body2.GetTransform().TransformDirection(_localAnchor2 - _body2.GetLocalCenter());
+			Vector2 r = _body2.GetXForm().TransformDirection(_localAnchor2 - _body2.GetLocalCenter());
 			Vector2 P = _impulse * _J.Linear2;
 			float L = _impulse * _J.Angular2 - r.Cross(P);
 			return inv_dt * L;
@@ -221,8 +221,8 @@ namespace Box2DX.Dynamics
 			}
 			else
 			{
-				Vector2 ug = g1.GetTransform().TransformDirection(_prismatic1._localXAxis1);
-				Vector2 r = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+				Vector2 ug = g1.GetXForm().TransformDirection(_prismatic1._localXAxis1);
+				Vector2 r = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
 				float crug = r.Cross(ug);
 				_J.Linear1 = -ug;
 				_J.Angular1 = -crug;
@@ -236,8 +236,8 @@ namespace Box2DX.Dynamics
 			}
 			else
 			{
-				Vector2 ug = g2.GetTransform().TransformDirection(_prismatic2._localXAxis1);
-				Vector2 r = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+				Vector2 ug = g2.GetXForm().TransformDirection(_prismatic2._localXAxis1);
+				Vector2 r = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 				float crug = r.Cross(ug);
 				_J.Linear2 = -_ratio * ug;
 				_J.Angular2 = -_ratio * crug;
@@ -313,8 +313,8 @@ namespace Box2DX.Dynamics
 			b2._sweep.C += b2._invMass * impulse * _J.Linear2;
 			b2._sweep.A += b2._invI * impulse * _J.Angular2;
 
-			b1.SynchronizeTransform();
-			b2.SynchronizeTransform();
+			b1.SynchronizeXForm();
+			b2.SynchronizeXForm();
 
 			//TODO_ERIN not implemented
 			return linearError < Settings.LinearSlop;

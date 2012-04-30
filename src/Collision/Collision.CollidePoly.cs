@@ -22,7 +22,7 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Collision
 {
@@ -31,7 +31,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Find the separation between poly1 and poly2 for a give edge normal on poly1.
 		/// </summary>
-		public static float EdgeSeparation(PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
+		public static float EdgeSeparation(PolygonShape poly1, XForm xf1, int edge1, PolygonShape poly2, XForm xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] vertices1 = poly1._vertices;
@@ -44,7 +44,7 @@ namespace Box2DX.Collision
 
 			// Convert normal from poly1's frame into poly2's frame.
 			Vector2 normal1World = xf1.TransformDirection(normals1[edge1]);
-			Vector2 normal1 = xf2.InverseTransformDirection(normal1World); 
+			Vector2 normal1 = xf2.InverseTransformDirection(normal1World);
 
 			// Find support vertex on poly2 for -normal.
 			int index = 0;
@@ -68,13 +68,13 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Find the max separation between poly1 and poly2 using edge normals from poly1.
 		/// </summary>
-		public static float FindMaxSeparation(ref int edgeIndex, PolygonShape poly1, Transform xf1, PolygonShape poly2, Transform xf2)
+		public static float FindMaxSeparation(ref int edgeIndex, PolygonShape poly1, XForm xf1, PolygonShape poly2, XForm xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] normals1 = poly1._normals;
 
 			// Vector pointing from the centroid of poly1 to the centroid of poly2.
-			Vector2 d = xf2.TransformPoint(poly2._centroid) - xf1.TransformPoint(poly1._centroid);
+			Vector2 d = xf2.TransformPoint(poly2._centroid) - xf1.TransformPoint(poly2._centroid);
 			Vector2 dLocal1 = xf1.InverseTransformDirection(d);
 
 			// Find edge normal on poly1 that has the largest projection onto d.
@@ -148,7 +148,7 @@ namespace Box2DX.Collision
 			return bestSeparation;
 		}
 
-		public static void FindIncidentEdge(out ClipVertex[] c, PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
+		public static void FindIncidentEdge(out ClipVertex[] c, PolygonShape poly1, XForm xf1, int edge1, PolygonShape poly2, XForm xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] normals1 = poly1._normals;
@@ -181,12 +181,12 @@ namespace Box2DX.Collision
 
 			c = new ClipVertex[2];
 
-			c[0].V = xf2.TransformPoint(vertices2[i1]);
+			c[0].V = Common.Math.Mul(xf2, vertices2[i1]);
 			c[0].ID.Features.ReferenceEdge = (byte)edge1;
 			c[0].ID.Features.IncidentEdge = (byte)i1;
 			c[0].ID.Features.IncidentVertex = 0;
 
-			c[1].V = xf2.TransformPoint(vertices2[i2]);
+			c[1].V = Common.Math.Mul(xf2, vertices2[i2]);
 			c[1].ID.Features.ReferenceEdge = (byte)edge1;
 			c[1].ID.Features.IncidentEdge = (byte)i2;
 			c[1].ID.Features.IncidentVertex = 1;
@@ -199,7 +199,7 @@ namespace Box2DX.Collision
 		// Clip
 		// The normal points from 1 to 2
 		public static void CollidePolygons(ref Manifold manifold,
-			PolygonShape polyA, Transform xfA, PolygonShape polyB, Transform xfB)
+			PolygonShape polyA, XForm xfA, PolygonShape polyB, XForm xfB)
 		{
 			manifold.PointCount = 0;
 			float totalRadius = polyA._radius + polyB._radius;
@@ -216,7 +216,7 @@ namespace Box2DX.Collision
 
 			PolygonShape poly1;	// reference poly
 			PolygonShape poly2;	// incident poly
-			Transform xf1, xf2;
+			XForm xf1, xf2;
 			int edge1;		// reference edge
 			byte flip;
 			const float k_relativeTol = 0.98f;
@@ -258,12 +258,12 @@ namespace Box2DX.Collision
 			localNormal.Normalize();
 			Vector2 planePoint = 0.5f * (v11 + v12);
 
-			Vector2 sideNormal = xf1.TransformDirection(v12 - v11);
+			Vector2 sideNormal = Common.Math.Mul(xf1.R, v12 - v11);
 			sideNormal.Normalize();
 			Vector2 frontNormal = sideNormal.CrossScalarPostMultiply(1.0f);
 
-			v11 = xf1.TransformPoint(v11); // Common.Math.Mul(xf1, v11);
-			v12 = xf2.TransformPoint(v12); // Common.Math.Mul(xf1, v12);
+			v11 = Common.Math.Mul(xf1, v11);
+			v12 = Common.Math.Mul(xf1, v12);
 
 			float frontOffset = Vector2.Dot(frontNormal, v11);
 			float sideOffset1 = -Vector2.Dot(sideNormal, v11);

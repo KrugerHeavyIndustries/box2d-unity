@@ -22,8 +22,6 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
-
 namespace Box2DX.Collision
 {
 	/// <summary>
@@ -39,9 +37,9 @@ namespace Box2DX.Collision
 			_type = ShapeType.CircleShape;
 		}
 
-		public override bool TestPoint(Transform transform, Vector2 p)
+		public override bool TestPoint(XForm XForm, Vector2 p)
 		{
-			Vector2 center = transform.position + transform.TransformDirection(_position);
+			Vector2 center = XForm.position + XForm.TransformDirection(_position);
 			Vector2 d = p - center;
 			return Vector2.Dot(d, d) <= _radius * _radius;
 		}
@@ -50,12 +48,12 @@ namespace Box2DX.Collision
 		// From Section 3.1.2
 		// x = s + a * r
 		// norm(x) = radius
-		public override SegmentCollide TestSegment(Transform transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
+		public override SegmentCollide TestSegment(XForm XForm, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			lambda = 0f;
 			normal = Vector2.zero;
 
-			Vector2 position = transform.position + transform.TransformDirection(_position);
+			Vector2 position = XForm.position + XForm.TransformDirection(_position);
 			Vector2 s = segment.P1 - position;
 			float b = Vector2.Dot(s, s) - _radius * _radius;
 
@@ -94,11 +92,11 @@ namespace Box2DX.Collision
 			return SegmentCollide.MissCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, Transform transform)
+		public override void ComputeAABB(out AABB aabb, XForm XForm)
 		{
 			aabb = new AABB();
 
-			Vector2 p = transform.position + transform.TransformDirection(_position);
+			Vector2 p = XForm.position + XForm.TransformDirection(_position);
 			aabb.LowerBound = new Vector2(p.x - _radius, p.y - _radius);
 			aabb.UpperBound = new Vector2(p.x + _radius, p.y + _radius);
 		}
@@ -114,9 +112,9 @@ namespace Box2DX.Collision
 			massData.I = massData.Mass * (0.5f * _radius * _radius + Vector2.Dot(_position, _position));
 		}		
 
-		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform transform, out Vector2 c)
+		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm XForm, out Vector2 c)
 		{
-			Vector2 p = transform.TransformPoint(_position);
+			Vector2 p = XForm.TransformPoint(_position);
 			float l = -(Vector2.Dot(normal, p) - offset);
 			if (l < -_radius + Box2DX.Common.Settings.FLT_EPSILON)
 			{

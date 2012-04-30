@@ -23,7 +23,7 @@ using System;
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Collision
 {
@@ -88,29 +88,29 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Test a point for containment in this shape. This only works for convex shapes.
 		/// </summary>
-		/// <param name="xf">The shape world transform.</param>
+		/// <param name="xf">The shape world XForm.</param>
 		/// <param name="p">A point in world coordinates.</param>
 		/// <returns></returns>
-		public abstract bool TestPoint(Transform transform, Vector2 p);
+		public abstract bool TestPoint(XForm XForm, Vector2 p);
 
 		/// <summary>
 		/// Perform a ray cast against this shape.
 		/// </summary>
-		/// <param name="xf">The shape world transform.</param>
+		/// <param name="xf">The shape world XForm.</param>
 		/// <param name="lambda">Returns the hit fraction. You can use this to compute the contact point
 		/// p = (1 - lambda) * segment.P1 + lambda * segment.P2.</param>
 		/// <param name="normal"> Returns the normal at the contact point. If there is no intersection, 
 		/// the normal is not set.</param>
 		/// <param name="segment">Defines the begin and end point of the ray cast.</param>
 		/// <param name="maxLambda">A number typically in the range [0,1].</param>
-		public abstract SegmentCollide TestSegment(Transform transform, out float lambda, out Vector2 normal, Segment segment, float maxLambda);
+		public abstract SegmentCollide TestSegment(XForm XForm, out float lambda, out Vector2 normal, Segment segment, float maxLambda);
 
 		/// <summary>
-		/// Given a transform, compute the associated axis aligned bounding box for this shape.
+		/// Given a XForm, compute the associated axis aligned bounding box for this shape.
 		/// </summary>
 		/// <param name="aabb">Returns the axis aligned box.</param>
-		/// <param name="xf">The world transform of the shape.</param>
-		public abstract void ComputeAABB(out AABB aabb, Transform xf);
+		/// <param name="xf">The world XForm of the shape.</param>
+		public abstract void ComputeAABB(out AABB aabb, XForm xf);
 
 		/// <summary>
 		/// Compute the mass properties of this shape using its dimensions and density.
@@ -124,10 +124,10 @@ namespace Box2DX.Collision
 		/// </summary>
 		/// <param name="normal">Normal the surface normal.</param>
 		/// <param name="offset">Offset the surface offset along normal.</param>
-		/// <param name="xf">The shape transform.</param>
+		/// <param name="xf">The shape XForm.</param>
 		/// <param name="c">Returns the centroid.</param>
 		/// <returns>The total volume less than offset along normal.</returns>
-		public abstract float ComputeSubmergedArea(Vector2 normal, float offset, Transform transform, out Vector2 c);
+		public abstract float ComputeSubmergedArea(Vector2 normal, float offset, XForm XForm, out Vector2 c);
 
 		/// <summary>
 		/// Compute the sweep radius. This is used for conservative advancement (continuous collision detection).

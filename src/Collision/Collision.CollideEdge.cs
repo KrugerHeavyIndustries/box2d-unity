@@ -22,17 +22,17 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using Transform = Box2DX.Common.Transform;
+using XForm = Box2DX.Common.XForm;
 
 namespace Box2DX.Collision
 {
 	public partial class Collision
 	{
 		// This implements 2-sided edge vs circle collision.
-		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, Transform transformA, CircleShape circle, Transform transformB)
+		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, XForm transformA, CircleShape circle, XForm transformB)
 		{
 			manifold.PointCount = 0;
-			Vector2 cLocal = transformA.InverseTransformPoint( transformB.TransformPoint(circle._position) );
+			Vector2 cLocal = Common.Math.MulT(transformA, Common.Math.Mul(transformB, circle._position));
 			Vector2 normal = edge._normal;
 			Vector2 v1 = edge._v1;
 			Vector2 v2 = edge._v2;
@@ -45,11 +45,11 @@ namespace Box2DX.Collision
 			if (u1 <= 0.0f)
 			{
 				// Behind v1
-				if ((cLocal- v1).SqrMagnitude() > radius * radius)
+				if ((cLocal- v1).sqrMagnitude > radius * radius)
 				{
 					return;
 				}
-
+				
 				manifold.PointCount = 1;
 				manifold.Type = ManifoldType.FaceA;
 				manifold.LocalPlaneNormal = cLocal - v1;
@@ -61,7 +61,7 @@ namespace Box2DX.Collision
 			else if (u2 <= 0.0f)
 			{
 				// Ahead of v2
-				if ((cLocal- v2).SqrMagnitude() > radius * radius)
+				if ((cLocal- v2).sqrMagnitude > radius * radius)
 				{
 					return;
 				}
@@ -92,12 +92,12 @@ namespace Box2DX.Collision
 		}
 
 		// Polygon versus 2-sided edge.
-		public static void CollidePolyAndEdge(ref Manifold manifold, PolygonShape polygon, Transform transformA, EdgeShape edge, Transform transformB)
+		public static void CollidePolyAndEdge(ref Manifold manifold, PolygonShape polygon, XForm XFormA, EdgeShape edge, XForm XFormB)
 		{
 			PolygonShape polygonB = new PolygonShape();
 			polygonB.SetAsEdge(edge._v1, edge._v2);
 
-			CollidePolygons(ref manifold, polygon, transformA, polygonB, transformB);
+			CollidePolygons(ref manifold, polygon, XFormA, polygonB, XFormB);
 		}
 	}
 }

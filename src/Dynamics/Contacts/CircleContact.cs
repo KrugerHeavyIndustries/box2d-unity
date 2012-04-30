@@ -34,7 +34,7 @@ namespace Box2DX.Dynamics
 			CollideShapeFunction = CollideCircles;
 		}
 
-		private static void CollideCircles(ref Manifold manifold, Shape shape1, Transform xf1, Shape shape2, Transform xf2)
+		private static void CollideCircles(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
 		{
 			Collision.Collision.CollideCircles(ref manifold, (CircleShape)shape1, xf1, (CircleShape)shape2, xf2);
 		}

@@ -28,7 +28,7 @@ using UnityEngine;
 namespace Box2DX.Common
 {
 	/// <summary>
-	/// A transform contains translation and rotation.
+	/// A XForm contains translation and rotation.
 	/// It is used to represent the position and orientation of rigid frames.
 	/// </summary>
 	public struct Transform
@@ -57,7 +57,7 @@ namespace Box2DX.Common
 		/// </summary>
 		/// <param name="position"></param>
 		/// <param name="R"></param>
-		public Transform(Vector2 position, Quaternion rotation)
+		public XForm(Vector2 position, Quaternion rotation)
 		{
 			this.position = position;
 			this.rotation = rotation;
@@ -85,7 +85,7 @@ namespace Box2DX.Common
 		public Vector2 TransformPoint(Vector2 vector)
 		{	
 #if USE_MATRIX_FOR_ROTATION
-			 return position + Math.Mul(rotation, vector);
+			return position + Math.Mul(rotation, vector);
 #else
 			return position + (rotation * vector.ToVector3()).ToVector2();
 #endif
@@ -93,7 +93,7 @@ namespace Box2DX.Common
 		}
 	
 		// <summary>
-		// Transforms direction from local space to world space.
+		// XForms direction from local space to world space.
 		// </summary>
 		public Vector2 TransformDirection(Vector2 vector) 
 		{ 
@@ -107,7 +107,7 @@ namespace Box2DX.Common
 #if USE_MATRIX_FOR_ROTATION
 		public static readonly Transform identify = new Transform(Vector2.zero, Mat22.Identity);
 #else 
-		public static readonly Transform identity = new Transform(Vector2.zero, Quaternion.identity);
+		public static readonly XForm identity = new XForm(Vector2.zero, Quaternion.identity);
 #endif 
 	}
 }
