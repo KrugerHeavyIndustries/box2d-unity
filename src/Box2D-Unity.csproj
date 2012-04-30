@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\Output\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;USE_MATRIX_FOR_ROTATION</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -94,6 +94,7 @@
     <Compile Include="Dynamics\WorldCallbacks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Transform.cs" />
+    <Compile Include="Common\XForm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Collision\TODO.txt" />
