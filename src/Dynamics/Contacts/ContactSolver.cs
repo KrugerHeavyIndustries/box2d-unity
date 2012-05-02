@@ -26,7 +26,7 @@ using Box2DX.Collision;
 using Box2DX.Common;
 
 using UnityEngine;
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -697,11 +697,11 @@ namespace Box2DX.Dynamics
 
 					bodyA._sweep.C -= invMassA * P;
 					bodyA._sweep.A -= invIA * rA.Cross(P);
-					bodyA.SynchronizeXForm();
+					bodyA.SynchronizeTransform();
 
 					bodyB._sweep.C += invMassB * P;
 					bodyB._sweep.A += invIB * rB.Cross(P);
-					bodyB.SynchronizeXForm();
+					bodyB.SynchronizeTransform();
 				}
 			}
 

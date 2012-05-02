@@ -25,7 +25,7 @@ using Box2DX.Common;
 using Box2DX.Collision;
 
 using UnityEngine;
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -235,9 +235,9 @@ namespace Box2DX.Dynamics
 		public abstract void DrawSegment(Vector2 p1, Vector2 p2, Color color);
 
 		/// <summary>
-		/// Draw a XForm. Choose your own length scale.
+		/// Draw a Transform. Choose your own length scale.
 		/// </summary>
-		/// <param name="xf">A XForm.</param>
-		public abstract void DrawXForm(XForm xf);
+		/// <param name="xf">A Transform.</param>
+		public abstract void DrawTransform(Transform xf);
 	}
 }

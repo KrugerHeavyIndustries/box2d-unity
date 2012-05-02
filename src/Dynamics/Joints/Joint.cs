@@ -25,7 +25,7 @@ using System.Text;
 
 using Box2DX.Common;
 using UnityEngine;
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -311,9 +311,10 @@ namespace Box2DX.Dynamics
 		// This returns true if the position errors are within tolerance.
 		internal abstract bool SolvePositionConstraints(float baumgarte);
 
-		internal void ComputeXForm(ref XForm xf, Vector2 center, Vector2 localCenter, float angle)
+		internal void ComputeTransform(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
-			xf.R = new Mat22(angle);
+			xf.rotation = Box2DX.Common.Math.AngleToRotation(angle);
+			//xf.R = new Mat22(angle);
 			xf.position = center - xf.TransformDirection(localCenter);
 		}
 	}

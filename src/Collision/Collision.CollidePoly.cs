@@ -22,7 +22,7 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Collision
 {
@@ -31,7 +31,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Find the separation between poly1 and poly2 for a give edge normal on poly1.
 		/// </summary>
-		public static float EdgeSeparation(PolygonShape poly1, XForm xf1, int edge1, PolygonShape poly2, XForm xf2)
+		public static float EdgeSeparation(PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] vertices1 = poly1._vertices;
@@ -68,7 +68,7 @@ namespace Box2DX.Collision
 		/// <summary>
 		/// Find the max separation between poly1 and poly2 using edge normals from poly1.
 		/// </summary>
-		public static float FindMaxSeparation(ref int edgeIndex, PolygonShape poly1, XForm xf1, PolygonShape poly2, XForm xf2)
+		public static float FindMaxSeparation(ref int edgeIndex, PolygonShape poly1, Transform xf1, PolygonShape poly2, Transform xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] normals1 = poly1._normals;
@@ -148,7 +148,7 @@ namespace Box2DX.Collision
 			return bestSeparation;
 		}
 
-		public static void FindIncidentEdge(out ClipVertex[] c, PolygonShape poly1, XForm xf1, int edge1, PolygonShape poly2, XForm xf2)
+		public static void FindIncidentEdge(out ClipVertex[] c, PolygonShape poly1, Transform xf1, int edge1, PolygonShape poly2, Transform xf2)
 		{
 			int count1 = poly1._vertexCount;
 			Vector2[] normals1 = poly1._normals;
@@ -199,7 +199,7 @@ namespace Box2DX.Collision
 		// Clip
 		// The normal points from 1 to 2
 		public static void CollidePolygons(ref Manifold manifold,
-			PolygonShape polyA, XForm xfA, PolygonShape polyB, XForm xfB)
+			PolygonShape polyA, Transform xfA, PolygonShape polyB, Transform xfB)
 		{
 			manifold.PointCount = 0;
 			float totalRadius = polyA._radius + polyB._radius;
@@ -216,7 +216,7 @@ namespace Box2DX.Collision
 
 			PolygonShape poly1;	// reference poly
 			PolygonShape poly2;	// incident poly
-			XForm xf1, xf2;
+			Transform xf1, xf2;
 			int edge1;		// reference edge
 			byte flip;
 			const float k_relativeTol = 0.98f;
@@ -258,7 +258,7 @@ namespace Box2DX.Collision
 			localNormal.Normalize();
 			Vector2 planePoint = 0.5f * (v11 + v12);
 
-			Vector2 sideNormal = Common.Math.Mul(xf1.R, v12 - v11);
+			Vector2 sideNormal = xf1.TransformDirection(v12 - v11);
 			sideNormal.Normalize();
 			Vector2 frontNormal = sideNormal.CrossScalarPostMultiply(1.0f);
 

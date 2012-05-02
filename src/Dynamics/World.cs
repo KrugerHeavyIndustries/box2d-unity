@@ -25,7 +25,7 @@ using Box2DX.Common;
 using Box2DX.Collision;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -350,7 +350,7 @@ namespace Box2DX.Dynamics
 				Body b = def.Body1._fixtureCount < def.Body2._fixtureCount ? def.Body1 : def.Body2;
 				for (Fixture f = b._fixtureList; f != null; f = f.Next)
 				{
-					f.RefilterProxy(_broadPhase, b.GetXForm());
+					f.RefilterProxy(_broadPhase, b.GetTransform());
 				}
 			}
 
@@ -442,7 +442,7 @@ namespace Box2DX.Dynamics
 				Body b = body1._fixtureCount < body2._fixtureCount ? body1 : body2;
 				for (Fixture f = b._fixtureList; f != null; f = f.Next)
 				{
-					f.RefilterProxy(_broadPhase, b.GetXForm());
+					f.RefilterProxy(_broadPhase, b.GetTransform());
 				}
 			}
 		}
@@ -519,7 +519,7 @@ namespace Box2DX.Dynamics
 		public void Refilter(Fixture fixture)
 		{
 			Box2DXDebug.Assert(_lock == false);
-			fixture.RefilterProxy(_broadPhase, fixture.Body.GetXForm());
+			fixture.RefilterProxy(_broadPhase, fixture.Body.GetTransform());
 		}
 
 		/// <summary>
@@ -1195,8 +1195,8 @@ namespace Box2DX.Dynamics
 		{
 			Body b1 = joint.GetBody1();
 			Body b2 = joint.GetBody2();
-			XForm xf1 = b1.GetXForm();
-			XForm xf2 = b2.GetXForm();
+			Transform xf1 = b1.GetTransform();
+			Transform xf2 = b2.GetTransform();
 			Vector2 x1 = xf1.position;
 			Vector2 x2 = xf2.position;
 			Vector2 p1 = joint.Anchor1;
@@ -1233,7 +1233,7 @@ namespace Box2DX.Dynamics
 			}
 		}
 
-		private void DrawFixture(Fixture fixture, XForm xf, Color color, bool core)
+		private void DrawFixture(Fixture fixture, Transform xf, Color color, bool core)
 		{
 #warning "the core argument is not used, the coreColor variable is also not used"
 			Color coreColor = new Color(0.9f, 0.6f, 0.6f);
@@ -1295,7 +1295,7 @@ namespace Box2DX.Dynamics
 
 				for (Body b = _bodyList; b != null; b = b.GetNext())
 				{
-					XForm xf = b.GetXForm();
+					Transform xf = b.GetTransform();
 					for (Fixture f = b.GetFixtureList(); f != null; f = f.Next)
 					{
 						if (b.IsStatic())
@@ -1411,9 +1411,9 @@ namespace Box2DX.Dynamics
 			{
 				for (Body b = _bodyList; b != null; b = b.GetNext())
 				{
-					XForm xf = b.GetXForm();
+					Transform xf = b.GetTransform();
 					xf.position = b.GetWorldCenter();
-					_debugDraw.DrawXForm(xf);
+					_debugDraw.DrawTransform(xf);
 				}
 			}
 		}

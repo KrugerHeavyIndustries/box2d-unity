@@ -25,7 +25,7 @@ using System;
 using Box2DX.Common;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Collision
 {
@@ -94,8 +94,8 @@ namespace Box2DX.Collision
 	/// </summary>
 	public struct DistanceInput
 	{
-		public XForm XFormA;
-		public XForm XFormB;
+		public Transform TransformA;
+		public Transform TransformB;
 		public bool UseRadii;
 	}
 
@@ -136,7 +136,7 @@ namespace Box2DX.Collision
 		internal SimplexVertex _v1, _v2, _v3;
 		internal int _count;
 
-		internal unsafe void ReadCache(SimplexCache* cache, Shape shapeA, XForm XFormA, Shape shapeB, XForm XFormB)
+		internal unsafe void ReadCache(SimplexCache* cache, Shape shapeA, Transform TransformA, Shape shapeB, Transform TransformB)
 		{
 			Box2DXDebug.Assert(0 <= cache->Count && cache->Count <= 3);
 
@@ -155,8 +155,8 @@ namespace Box2DX.Collision
 					v->indexB = cache->IndexB[i];
 					Vector2 wALocal = shapeA.GetVertex(v->indexA);
 					Vector2 wBLocal = shapeB.GetVertex(v->indexB);
-					v->wA = XFormA.TransformPoint(wALocal);
-					v->wB = XFormB.TransformPoint(wBLocal);
+					v->wA = TransformA.TransformPoint(wALocal);
+					v->wB = TransformB.TransformPoint(wBLocal);
 					v->w = v->wB - v->wA;
 					v->a = 0.0f;
 				}
@@ -182,8 +182,8 @@ namespace Box2DX.Collision
 					v->indexB = 0;
 					Vector2 wALocal = shapeA.GetVertex(0);
 					Vector2 wBLocal = shapeB.GetVertex(0);
-					v->wA = XFormA.TransformPoint(wALocal);
-					v->wB = XFormB.TransformPoint(wBLocal);
+					v->wA = TransformA.TransformPoint(wALocal);
+					v->wB = TransformB.TransformPoint(wBLocal);
 					v->w = v->wB - v->wA;
 					_count = 1;
 				}
@@ -470,14 +470,14 @@ namespace Box2DX.Collision
 		{
 			output = new DistanceOutput();
 
-			XForm XFormA = input.XFormA;
-			XForm XFormB = input.XFormB;
+			Transform TransformA = input.TransformA;
+			Transform TransformB = input.TransformB;
 
 			// Initialize the simplex.
 			Simplex simplex = new Simplex();
 			fixed (SimplexCache* sPtr = &cache)
 			{
-				simplex.ReadCache(sPtr, shapeA, XFormA, shapeB, XFormB);
+				simplex.ReadCache(sPtr, shapeA, TransformA, shapeB, TransformB);
 			}	
 
 			// Get simplex vertices as an array.
@@ -546,11 +546,11 @@ namespace Box2DX.Collision
 
 				// Compute a tentative new simplex vertex using support points.
 				SimplexVertex* vertex = vertices + simplex._count;
-				vertex->indexA = shapeA.GetSupport(XFormA.InverseTransformDirection(p));
-				vertex->wA = XFormA.TransformPoint(shapeA.GetVertex(vertex->indexA));
+				vertex->indexA = shapeA.GetSupport(TransformA.InverseTransformDirection(p));
+				vertex->wA = TransformA.TransformPoint(shapeA.GetVertex(vertex->indexA));
 				//Vec2 wBLocal;
-				vertex->indexB = shapeB.GetSupport(XFormB.InverseTransformDirection(-p));
-				vertex->wB = XFormB.TransformPoint(shapeB.GetVertex(vertex->indexB));
+				vertex->indexB = shapeB.GetSupport(TransformB.InverseTransformDirection(-p));
+				vertex->wB = TransformB.TransformPoint(shapeB.GetVertex(vertex->indexB));
 				vertex->w = vertex->wB - vertex->wA;
 
 				// Iteration count is equated to the number of support point calls.

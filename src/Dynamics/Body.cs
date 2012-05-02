@@ -25,7 +25,7 @@ using Box2DX.Common;
 using Box2DX.Collision;
 
 using UnityEngine;
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -153,7 +153,7 @@ namespace Box2DX.Dynamics
 
 		internal int _islandIndex;
 
-		internal XForm _xf;		// the body origin XForm
+		internal Transform _xf;		// the body origin Transform
 
 		internal Sweep _sweep;	// the swept motion for CCD
 
@@ -217,7 +217,8 @@ namespace Box2DX.Dynamics
 			_world = world;
 
 			_xf.position = bd.Position;
-			_xf.R = new Mat22(bd.Angle);
+			_xf.rotation = Box2DX.Common.Math.AngleToRotation(bd.Angle);
+			//_xf.R = new Mat22(bd.Angle);
 
 			_sweep.LocalCenter = bd.MassData.Center;
 			_sweep.T0 = 1.0f;
@@ -287,8 +288,9 @@ namespace Box2DX.Dynamics
 
 		internal bool SynchronizeFixtures()
 		{
-			XForm xf1;
-			xf1.R = new Mat22(_sweep.A0);
+			Transform xf1;
+			xf1.rotation = Box2DX.Common.Math.AngleToRotation(_sweep.A0);
+			//xf1.R = new Mat22(_sweep.A0);
 			xf1.position = _sweep.C0 - xf1.TransformDirection(_sweep.LocalCenter);
 
 			bool inRange = true;
@@ -532,6 +534,11 @@ namespace Box2DX.Dynamics
 			}
 		}
 		
+		public bool SetTransform(Vector2 position, float angle) 
+		{
+			return SetTransform(position, Box2DX.Common.Math.AngleToRotation(angle));
+		}
+		
 #if USE_MATRIX_FOR_ROTATION
 		/// <summary>
 		/// Set the position of the body's origin and rotation (radians).
@@ -542,9 +549,9 @@ namespace Box2DX.Dynamics
 		/// <param name="angle">The new world rotation angle of the body in radians.</param>
 		/// <returns>Return false if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetXForm(Vector2 position, Mat22 rotation)
+		public bool SetTransform(Vector2 position, Mat22 rotation)
 #else
-		public bool SetXForm(Vector2 position, Quaternion rotation)
+		public bool SetTransform(Vector2 position, Quaternion rotation)
 #endif
 		{
 			Box2DXDebug.Assert(_world._lock == false);
@@ -557,8 +564,9 @@ namespace Box2DX.Dynamics
 			{
 				return false;
 			}
-
-			_xf.R = rotation;
+			
+			_xf.rotation = rotation;
+			//_xf.R = rotation;
 			_xf.position = position;
 
 			_sweep.C0 = _sweep.C = _xf.TransformPoint(_sweep.LocalCenter);
@@ -601,19 +609,19 @@ namespace Box2DX.Dynamics
 		/// Note this is less efficient than the other overload - you should use that
 		/// if the angle is available.
 		/// </summary>
-		/// <param name="xf">The XForm of position and angle to set the body to.</param>
+		/// <param name="xf">The Transform of position and angle to set the body to.</param>
 		/// <returns>False if the movement put a shape outside the world. In this case the
 		/// body is automatically frozen.</returns>
-		public bool SetXForm(XForm xf)
+		public bool SetTransform(Transform xf)
 		{
-			return SetXForm(xf.position, xf.R);
+			return SetTransform(xf.position, xf.rotation);
 		}
 
 		/// <summary>
-		/// Get the body XForm for the body's origin.
+		/// Get the body Transform for the body's origin.
 		/// </summary>
-		/// <returns>Return the world XForm of the body's origin.</returns>
-		public XForm GetXForm()
+		/// <returns>Return the world Transform of the body's origin.</returns>
+		public Transform GetTransform()
 		{
 			return _xf;
 		}
@@ -625,9 +633,9 @@ namespace Box2DX.Dynamics
 		public void SetPosition(Vector2 position)
 		{
 #if USE_MATRIX_FOR_ROTATION
-			SetXForm(position, new Mat22(GetAngle()));
+			SetTransform(position, new Mat22(GetAngle()));
 #else
-			SetXForm(position, QuaternionExtension.FromAngle2D(GetAngle()));
+			SetTransform(position, Box2DX.Common.Math.AngleToRotation(GetAngle()));
 #endif
 		}
 
@@ -638,9 +646,9 @@ namespace Box2DX.Dynamics
 		public void SetAngle(float angle)
 		{
 #if USE_MATRIX_FOR_ROTATION
-			SetXForm(GetPosition(), new Mat22(angle));
+			SetTransform(GetPosition(), new Mat22(angle));
 #else
-			SetXForm(GetPosition(), QuaternionExtension.FromAngle2D(angle));
+			SetTransform(GetPosition(), Box2DX.Common.Math.AngleToRotation(angle));
 #endif
 		}
 
@@ -1078,10 +1086,11 @@ namespace Box2DX.Dynamics
 		/// <returns></returns>
 		public World GetWorld() { return _world; }
 
-		internal void SynchronizeXForm()
+		internal void SynchronizeTransform()
 		{
-			_xf.R = new Mat22(_sweep.A);
-			_xf.position = _sweep.C - Common.Math.Mul(_xf.R, _sweep.LocalCenter);
+			//_xf.R = new Mat22(_sweep.A);
+			_xf.rotation = Box2DX.Common.Math.AngleToRotation(_sweep.A);
+			_xf.position = _sweep.C - _xf.TransformDirection(_sweep.LocalCenter);//Common.Math.Mul(_xf.R, _sweep.LocalCenter);
 		}
 
 		internal void Advance(float t)
@@ -1090,7 +1099,7 @@ namespace Box2DX.Dynamics
 			_sweep.Advance(t);
 			_sweep.C = _sweep.C0;
 			_sweep.A = _sweep.A0;
-			SynchronizeXForm();
+			SynchronizeTransform();
 		}
 	}
 }

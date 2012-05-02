@@ -25,7 +25,7 @@ using System.Text;
 using Box2DX.Common;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Collision
 {
@@ -85,16 +85,16 @@ namespace Box2DX.Collision
 			_cornerDir2 = -1.0f * _normal;
 		}
 
-		public override bool TestPoint(XForm XForm, Vector2 p)
+		public override bool TestPoint(Transform xf, Vector2 p)
 		{
 			return false;
 		}
 
-		public override SegmentCollide TestSegment(XForm XForm, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
+		public override SegmentCollide TestSegment(Transform xf, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			Vector2 r = segment.P2 - segment.P1;
-			Vector2 v1 = XForm.TransformPoint(_v1);
-			Vector2 d = ((Vector2)XForm.TransformPoint(_v2)) - v1;
+			Vector2 v1 = xf.TransformPoint(_v1);
+			Vector2 d = ((Vector2)xf.TransformPoint(_v2)) - v1;
 			Vector2 n = d.CrossScalarPostMultiply(1.0f);
 
 			float k_slop = 100.0f * Common.Settings.FLT_EPSILON;
@@ -128,10 +128,10 @@ namespace Box2DX.Collision
 			return SegmentCollide.MissCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm XForm)
+		public override void ComputeAABB(out AABB aabb, Transform xf)
 		{
-			Vector2 v1 = XForm.TransformPoint(_v1);
-			Vector2 v2 = XForm.TransformPoint(_v2);
+			Vector2 v1 = xf.TransformPoint(_v1);
+			Vector2 v2 = xf.TransformPoint(_v2);
 
 			Vector2 r = new Vector2(_radius, _radius);
 			aabb.LowerBound = Vector2.Min(v1, v2) - r;
@@ -159,7 +159,7 @@ namespace Box2DX.Collision
 			_cornerConvex2 = convex;
 		}
 
-		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
+		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform xf, out Vector2 c)
 		{
 			//Note that v0 is independent of any details of the specific edge
 			//We are relying on v0 being consistent between multiple edges of the same body

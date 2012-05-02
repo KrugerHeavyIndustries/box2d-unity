@@ -22,7 +22,7 @@
 using Box2DX.Collision;
 using Box2DX.Common;
 using UnityEngine;
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Dynamics
 {
@@ -36,7 +36,7 @@ namespace Box2DX.Dynamics
 			CollideShapeFunction = CollidePolygonCircle;
 		}
 
-		private static void CollidePolygonCircle(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
+		private static void CollidePolygonCircle(ref Manifold manifold, Shape shape1, Transform xf1, Shape shape2, Transform xf2)
 		{
 			Collision.Collision.CollidePolygonAndCircle(ref manifold, (PolygonShape)shape1, xf1, (CircleShape)shape2, xf2);
 		}

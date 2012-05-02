@@ -124,7 +124,7 @@ namespace Box2DX.Dynamics.Controllers
                 }
                 areac.x /= area;
                 areac.y /= area;
-                //Vec2 localCentroid = Math.MulT(body.GetXForm(), areac);
+                //Vec2 localCentroid = Math.MulT(body.GetTransform(), areac);
                 massc.x /= mass;
                 massc.y /= mass;
                 if (area < Settings.FLT_EPSILON)

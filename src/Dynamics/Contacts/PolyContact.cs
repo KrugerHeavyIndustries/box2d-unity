@@ -34,7 +34,7 @@ namespace Box2DX.Dynamics
 			CollideShapeFunction = CollidePolygons;
 		}
 
-		private static void CollidePolygons(ref Manifold manifold, Shape shape1, XForm xf1, Shape shape2, XForm xf2)
+		private static void CollidePolygons(ref Manifold manifold, Shape shape1, Transform xf1, Shape shape2, Transform xf2)
 		{
 			Collision.Collision.CollidePolygons(ref manifold, (PolygonShape)shape1, xf1, (PolygonShape)shape2, xf2);
 		}

@@ -336,8 +336,8 @@ namespace Box2DX.Dynamics
 			}
 
 			// Compute the effective mass matrix.
-			Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-			Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+			Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+			Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 			// J = [-I -r1_skew I r2_skew]
 			//     [ 0       -1 0       1]
@@ -453,8 +453,8 @@ namespace Box2DX.Dynamics
 			//Solve limit constraint.
 			if (_enableLimit && _limitState != LimitState.InactiveLimit)
 			{
-				Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-				Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 				// Solve point-to-point constraint
 				Vector2 Cdot1 = v2 + r2.CrossScalarPreMultiply(w2) - v1 - r1.CrossScalarPreMultiply(w1);
@@ -506,8 +506,8 @@ namespace Box2DX.Dynamics
 			}
 			else
 			{
-				Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-				Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 				// Solve point-to-point constraint
 				Vector2 Cdot = v2 + r2.CrossScalarPreMultiply(w2) - v1 - r1.CrossScalarPreMultiply(w1);
@@ -574,14 +574,14 @@ namespace Box2DX.Dynamics
 				b1._sweep.A -= b1._invI * limitImpulse;
 				b2._sweep.A += b2._invI * limitImpulse;
 
-				b1.SynchronizeXForm();
-				b2.SynchronizeXForm();
+				b1.SynchronizeTransform();
+				b2.SynchronizeTransform();
 			}
 
 			// Solve point-to-point constraint.
 			{
-				Vector2 r1 = b1.GetXForm().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
-				Vector2 r2 = b2.GetXForm().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
+				Vector2 r1 = b1.GetTransform().TransformDirection(_localAnchor1 - b1.GetLocalCenter());
+				Vector2 r2 = b2.GetTransform().TransformDirection(_localAnchor2 - b2.GetLocalCenter());
 
 				Vector2 C = b2._sweep.C + r2 - b1._sweep.C - r1;
 				positionError = C.magnitude;
@@ -627,8 +627,8 @@ namespace Box2DX.Dynamics
 				b2._sweep.C += b2._invMass * impulse_;
 				b2._sweep.A += b2._invI * r2.Cross(impulse_);
 
-				b1.SynchronizeXForm();
-				b2.SynchronizeXForm();
+				b1.SynchronizeTransform();
+				b2.SynchronizeTransform();
 			}
 
 			return positionError <= Settings.LinearSlop && angularError <= Settings.AngularSlop;

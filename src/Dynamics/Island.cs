@@ -305,8 +305,8 @@ namespace Box2DX.Dynamics
 				b._sweep.C += step.Dt * b._linearVelocity;
 				b._sweep.A += step.Dt * b._angularVelocity;
 
-				// Compute new XForm
-				b.SynchronizeXForm();
+				// Compute new Transform
+				b.SynchronizeTransform();
 
 				// Note: shapes are synchronized later.
 			}
@@ -451,8 +451,8 @@ namespace Box2DX.Dynamics
 				b._sweep.C += subStep.Dt * b._linearVelocity;
 				b._sweep.A += subStep.Dt * b._angularVelocity;
 
-				// Compute new XForm
-				b.SynchronizeXForm();
+				// Compute new Transform
+				b.SynchronizeTransform();
 
 				// Note: shapes are synchronized later.
 			}

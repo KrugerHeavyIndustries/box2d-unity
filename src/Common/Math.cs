@@ -100,6 +100,19 @@ namespace Box2DX.Common
 			[System.Runtime.InteropServices.FieldOffset(0)]
 			public int i;
 		}
+	
+
+#if USE_MATRIX_FOR_ROTATION
+	 	public static Mat22 AngleToRotation(float angle) 
+		{
+			return new Mat22(angle);
+		}
+#else
+		public static Quaternion AngleToRotation(float angle)
+		{
+			return QuaternionExtension.FromAngle2D(angle);
+		}
+#endif 
 
 		/// <summary>
 		/// This is a approximate yet fast inverse square-root.
@@ -198,7 +211,7 @@ namespace Box2DX.Common
 
 		/// <summary>
 		/// Multiply a matrix times a vector. If a rotation matrix is provided,
-		/// then this XForms the vector from one frame to another.
+		/// then this Transforms the vector from one frame to another.
 		/// </summary>
 		public static Vector2 Mul(Mat22 A, Vector2 v)
 		{
@@ -207,7 +220,7 @@ namespace Box2DX.Common
 
 		/// <summary>
 		/// Multiply a matrix transpose times a vector. If a rotation matrix is provided,
-		/// then this XForms the vector from one frame to another (inverse XForm).
+		/// then this Transforms the vector from one frame to another (inverse Transform).
 		/// </summary>
 		public static Vector2 MulT(Mat22 A, Vector2 v)
 		{
@@ -234,14 +247,22 @@ namespace Box2DX.Common
 			return new Mat22(c1, c2);
 		}
 	
-		public static Vector2 Mul(XForm T, Vector2 v)
+		public static Vector2 Mul(Transform T, Vector2 v)
 		{
+#if USE_MATRIX_FOR_ROTATION
 			return T.position + Math.Mul(T.R, v);
+#else
+			return T.position + T.TransformDirection(v);
+#endif
 		}
 
-		public static Vector2 MulT(XForm T, Vector2 v)
+		public static Vector2 MulT(Transform T, Vector2 v)
 		{
+#if USE_MATRIX_FOR_ROTATION
 			return Math.MulT(T.R, v - T.position);
+#else
+			return T.InverseTransformDirection(v - T.position);
+#endif
 		}
 	
 		/// <summary>

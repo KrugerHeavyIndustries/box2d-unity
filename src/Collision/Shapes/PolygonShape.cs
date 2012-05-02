@@ -28,7 +28,7 @@ using System.Text;
 using Box2DX.Common;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Collision
 {
@@ -142,13 +142,14 @@ namespace Box2DX.Collision
 		{
 			SetAsBox(hx, hy);
 
-			XForm xf = new XForm();
+			Transform xf = new Transform();
 			xf.position = center;
-			xf.R = new Mat22(angle);
+			xf.rotation = Box2DX.Common.Math.AngleToRotation(angle);
+			// xf.R = new Mat22(angle);
 			
 			//Debug.Log(string.Format("xf.position = ({0},{1}) xf.rotation = ({2},{3},{4},{5})", xf.position.x, xf.position.y, xf.rotation.x, xf.rotation.y, xf.rotation.z, xf.rotation.w));
 
-			// XForm vertices and normals.
+			// Transform vertices and normals.
 			for (int i = 0; i < _vertexCount; ++i)
 			{
 				_vertices[i] = xf.TransformPoint(_vertices[i]);
@@ -167,7 +168,7 @@ namespace Box2DX.Collision
 			_normals[1] = -_normals[0];
 		}
 
-		public override bool TestPoint(XForm xf, Vector2 p)
+		public override bool TestPoint(Transform xf, Vector2 p)
 		{
 			Vector2 pLocal = xf.InverseTransformDirection(p - xf.position);
 
@@ -184,7 +185,7 @@ namespace Box2DX.Collision
 			return true;
 		}
 
-		public override SegmentCollide TestSegment(XForm xf, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
+		public override SegmentCollide TestSegment(Transform xf, out float lambda, out Vector2 normal, Segment segment, float maxLambda)
 		{
 			lambda = 0f;
 			normal = Vector2.zero;
@@ -251,7 +252,7 @@ namespace Box2DX.Collision
 			return SegmentCollide.StartInsideCollide;
 		}
 
-		public override void ComputeAABB(out AABB aabb, XForm xf)
+		public override void ComputeAABB(out AABB aabb, Transform xf)
 		{
 			Vector2 lower = xf.TransformPoint( _vertices[0]);
 			Vector2 upper = lower;
@@ -287,7 +288,7 @@ namespace Box2DX.Collision
 			// where 0 <= u && 0 <= v && u + v <= 1.
 			//
 			// We integrate u from [0,1-v] and then v from [0,1].
-			// We also need to use the Jacobian of the XFormation:
+			// We also need to use the Jacobian of the Transformation:
 			// D = cross(e1, e2)
 			//
 			// Simplification: triangle centroid = (1/3) * (p1 + p2 + p3)
@@ -355,9 +356,9 @@ namespace Box2DX.Collision
 			massData.I = denstity * I;
 		}
 
-		public override float ComputeSubmergedArea(Vector2 normal, float offset, XForm xf, out Vector2 c)
+		public override float ComputeSubmergedArea(Vector2 normal, float offset, Transform xf, out Vector2 c)
 		{
-			//XForm plane into shape co-ordinates
+			//Transform plane into shape co-ordinates
 			Vector2 normalL = xf.InverseTransformDirection(normal);
 			float offsetL = offset - Vector2.Dot(normal, xf.position);
 
@@ -469,7 +470,7 @@ namespace Box2DX.Collision
 				p2 = p3;
 			}
 
-			//Normalize and XForm centroid
+			//Normalize and Transform centroid
 			center *= 1.0f / area;
 
 			c = xf.TransformPoint(center);
@@ -588,7 +589,7 @@ namespace Box2DX.Collision
 			_type = ShapeType.PolygonShape;
 			PolygonDef poly = (PolygonDef)def;
 
-			// Get the vertices XFormed into the body frame.
+			// Get the vertices Transformed into the body frame.
 			_vertexCount = poly.VertexCount;
 			Box2DXDebug.Assert(3 <= _vertexCount && _vertexCount <= Settings.MaxPolygonVertices);
 

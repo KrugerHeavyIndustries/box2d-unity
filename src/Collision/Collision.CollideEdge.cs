@@ -22,14 +22,14 @@
 using Box2DX.Common;
 using UnityEngine;
 
-using XForm = Box2DX.Common.XForm;
+using Transform = Box2DX.Common.Transform;
 
 namespace Box2DX.Collision
 {
 	public partial class Collision
 	{
 		// This implements 2-sided edge vs circle collision.
-		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, XForm transformA, CircleShape circle, XForm transformB)
+		public static void CollideEdgeAndCircle(ref Manifold manifold, EdgeShape edge, Transform transformA, CircleShape circle, Transform transformB)
 		{
 			manifold.PointCount = 0;
 			Vector2 cLocal = Common.Math.MulT(transformA, Common.Math.Mul(transformB, circle._position));
@@ -92,12 +92,12 @@ namespace Box2DX.Collision
 		}
 
 		// Polygon versus 2-sided edge.
-		public static void CollidePolyAndEdge(ref Manifold manifold, PolygonShape polygon, XForm XFormA, EdgeShape edge, XForm XFormB)
+		public static void CollidePolyAndEdge(ref Manifold manifold, PolygonShape polygon, Transform TransformA, EdgeShape edge, Transform TransformB)
 		{
 			PolygonShape polygonB = new PolygonShape();
 			polygonB.SetAsEdge(edge._v1, edge._v2);
 
-			CollidePolygons(ref manifold, polygon, XFormA, polygonB, XFormB);
+			CollidePolygons(ref manifold, polygon, TransformA, polygonB, TransformB);
 		}
 	}
 }
