@@ -46,7 +46,8 @@ namespace Box2DX.Collision
 			FaceA,
 			FaceB
 		};
-
+		
+#if ALLOWUNSAFE
 		internal unsafe void Initialize(SimplexCache* cache,
 			Shape shapeA, Transform TransformA,
 			Shape shapeB, Transform TransformB)
@@ -110,6 +111,69 @@ namespace Box2DX.Collision
 				}
 			}
 		}
+#else
+		internal void Initialize(SimplexCache cache, Shape shapeA, Transform transformA, Shape shapeB, Transform transformB)
+		{
+			ShapeA = shapeA;
+			ShapeB = shapeB;
+			int count = cache.Count;
+			Box2DXDebug.Assert(0 < count && count < 3);
+
+			if (count == 1)
+			{
+				FaceType = Type.Points;
+				Vector2 localPointA = ShapeA.GetVertex(cache.IndexA[0]);
+				Vector2 localPointB = ShapeB.GetVertex(cache.IndexB[0]);
+				Vector2 pointA = transformA.TransformPoint(localPointA);
+				Vector2 pointB = transformB.TransformPoint(localPointB);
+				Axis = pointB - pointA;
+				Axis.Normalize();
+			}
+			else if (cache.IndexB[0] == cache.IndexB[1])
+			{
+				// Two points on A and one on B
+				FaceType = Type.FaceA;
+				Vector2 localPointA1 = ShapeA.GetVertex(cache.IndexA[0]);
+				Vector2 localPointA2 = ShapeA.GetVertex(cache.IndexA[1]);
+				Vector2 localPointB = ShapeB.GetVertex(cache.IndexB[0]);
+				LocalPoint = 0.5f * (localPointA1 + localPointA2);
+				Axis = (localPointA2 - localPointA1).CrossScalarPostMultiply(1.0f);
+				Axis.Normalize();
+
+				Vector2 normal = transformA.TransformDirection(Axis);
+				Vector2 pointA = transformA.TransformPoint(LocalPoint);
+				Vector2 pointB = transformB.TransformPoint(localPointB);
+
+				float s = Vector2.Dot(pointB - pointA, normal);
+				if (s < 0.0f)
+				{
+					Axis = -Axis;
+				}
+			}
+			else
+			{
+				// Two points on B and one or two points on A.
+				// We ignore the second point on A.
+				FaceType = Type.FaceB;
+				Vector2 localPointA = shapeA.GetVertex(cache.IndexA[0]);
+				Vector2 localPointB1 = shapeB.GetVertex(cache.IndexB[0]);
+				Vector2 localPointB2 = shapeB.GetVertex(cache.IndexB[1]);
+				LocalPoint = 0.5f * (localPointB1 + localPointB2);
+				Axis = (localPointB2 - localPointB1).CrossScalarPostMultiply(1.0f);
+				Axis.Normalize();
+
+				Vector2 normal = transformB.TransformDirection(Axis);
+				Vector2 pointB = transformB.TransformPoint(LocalPoint);
+				Vector2 pointA = transformA.TransformPoint(localPointA);
+
+				float s = Vector2.Dot(pointA - pointB, normal);
+				if (s < 0.0f)
+				{
+					Axis = -Axis;
+				}
+			}
+		}
+#endif
 
 		internal float Evaluate(Transform TransformA, Transform TransformB)
 		{
@@ -227,10 +291,14 @@ namespace Box2DX.Collision
 				}
 
 				SeparationFunction fcn = new SeparationFunction();
+#if ALLOWUNSAFE
 				unsafe
 				{
 					fcn.Initialize(&cache, shapeA, xfA, shapeB, xfB);
 				}
+#else 
+				fcn.Initialize(cache, shapeA, xfA, shapeB, xfB);
+#endif 
 
 				float separation = fcn.Evaluate(xfA, xfB);
 				if (separation <= 0.0f)

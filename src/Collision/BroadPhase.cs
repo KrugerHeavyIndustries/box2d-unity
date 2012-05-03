@@ -38,7 +38,6 @@ Bullet (http:/www.bulletphysics.com).
 // - no broadphase is perfect and neither is this one: it is not great for huge
 //   worlds (use a multi-SAP instead), it is not great for large objects.
 
-#define ALLOWUNSAFE
 //#define TARGET_FLOAT32_IS_FIXED
 
 using System;
@@ -641,7 +640,7 @@ namespace Box2DX.Collision
 		public
 #if ALLOWUNSAFE
 		unsafe 
-#endif //#if ALLOWUNSAFE
+#endif 
 		int QuerySegment(Segment segment, object[] userData, int maxCount, SortKeyFunc sortKey)
 		{
 			float maxLambda = 1;

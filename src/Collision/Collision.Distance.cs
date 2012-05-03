@@ -20,6 +20,7 @@
 */
 
 #define DEBUG
+#undef ALLOWSAFE
 
 using System;
 using Box2DX.Common;
@@ -135,7 +136,8 @@ namespace Box2DX.Collision
 	{
 		internal SimplexVertex _v1, _v2, _v3;
 		internal int _count;
-
+		
+#if ALLOWUNSAFE
 		internal unsafe void ReadCache(SimplexCache* cache, Shape shapeA, Transform TransformA, Shape shapeB, Transform TransformB)
 		{
 			Box2DXDebug.Assert(0 <= cache->Count && cache->Count <= 3);
@@ -207,6 +209,68 @@ namespace Box2DX.Collision
 				}
 			}
 		}
+#else // ALLOWUNSAFE
+		
+		internal void ReadCache(SimplexCache cache, Shape shapeA, Transform transformA, Shape shapeB, Transform transformB)
+		{
+			Box2DXDebug.Assert(0 <= cache.Count && cache.Count <= 3);
+
+			// Copy data from cache.
+			_count = cache.Count;
+			SimplexVertex[] vertices = new SimplexVertex[] { _v1, _v2, _v3 };
+			for (int i = 0; i < _count; ++i)
+			{
+				SimplexVertex v = vertices[i];
+				v.indexA = cache.IndexA[i];
+				v.indexB = cache.IndexB[i];
+				Vector2 wALocal = shapeA.GetVertex(v.indexA);
+				Vector2 wBLocal = shapeB.GetVertex(v.indexB);
+				v.wA = transformA.TransformPoint(wALocal);
+				v.wB = transformB.TransformPoint(wBLocal);
+				v.w = v.wB - v.wA;
+				v.a = 0.0f;
+			}
+
+			// Compute the new simplex metric, if it is substantially different than
+			// old metric then flush the simplex.
+			if (_count > 1)
+			{
+				float metric1 = cache.Metric;
+				float metric2 = GetMetric();
+				if (metric2 < 0.5f * metric1 || 2.0f * metric1 < metric2 || metric2 < Common.Settings.FLT_EPSILON)
+				{
+					// Reset the simplex.
+					_count = 0;
+				}
+			}
+
+			// If the cache is empty or invalid ...
+			if (_count == 0)
+			{
+				SimplexVertex v = vertices[0];
+				v.indexA = 0;
+				v.indexB = 0;
+				Vector2 wALocal = shapeA.GetVertex(0);
+				Vector2 wBLocal = shapeB.GetVertex(0);
+				v.wA = transformA.TransformPoint(wALocal);
+				v.wB = transformB.TransformPoint(wBLocal);
+				v.w = v.wB - v.wA;
+				_count = 1;
+			}
+		}
+
+		internal void WriteCache(SimplexCache cache)
+		{
+			cache.Metric = GetMetric();
+			cache.Count = (UInt16)_count;
+			SimplexVertex[] vertices = new SimplexVertex[] { _v1, _v2, _v3 };
+			for (int i = 0; i < _count; ++i)
+			{
+				cache.IndexA[i] = (Byte)(vertices[i].indexA);
+				cache.IndexB[i] = (Byte)(vertices[i].indexB);
+			}
+		}
+#endif // ALLOWUNSAFE
 
 		internal Vector2 GetClosestPoint()
 		{
@@ -230,7 +294,8 @@ namespace Box2DX.Collision
 					return Vector2.zero;
 			}
 		}
-
+		
+#if ALLOWUNSAFE
 		internal unsafe void GetWitnessPoints(Vector2* pA, Vector2* pB)
 		{
 			switch (_count)
@@ -259,6 +324,37 @@ namespace Box2DX.Collision
 					break;
 			}
 		}
+#else
+		internal void GetWitnessPoints(out Vector2 pA, out Vector2 pB)
+		{
+			switch (_count)
+			{
+				case 0:
+					Box2DXDebug.Assert(false);
+					break;
+
+				case 1:
+					pA = _v1.wA;
+					pB = _v1.wB;
+					break;
+
+				case 2:
+					pA = _v1.a * _v1.wA + _v2.a * _v2.wA;
+					pB = _v1.a * _v1.wB + _v2.a * _v2.wB;
+					break;
+
+				case 3:
+					pA = _v1.a * _v1.wA + _v2.a * _v2.wA + _v3.a * _v3.wA;
+					pB = pA;
+					break;
+
+				default:
+					Box2DXDebug.Assert(false);
+					break;
+			}
+		}
+		
+#endif // ALLOWUNSAFE
 
 		internal float GetMetric()
 		{
@@ -466,26 +562,43 @@ namespace Box2DX.Collision
 		/// CircleShape, PolygonShape, EdgeShape. The simplex cache is input/output.
 		/// On the first call set SimplexCache.Count to zero.
 		/// </summary>		
-		public unsafe static void Distance(out DistanceOutput output, ref SimplexCache cache, ref DistanceInput input, Shape shapeA, Shape shapeB)
+		public 
+#if ALLOWUNSAFE
+		unsafe 
+#endif // ALLOWUNSAFE
+		static void Distance(out DistanceOutput output, ref SimplexCache cache, ref DistanceInput input, Shape shapeA, Shape shapeB)
 		{
 			output = new DistanceOutput();
 
-			Transform TransformA = input.TransformA;
-			Transform TransformB = input.TransformB;
+			Transform transformA = input.TransformA;
+			Transform transformB = input.TransformB;
 
 			// Initialize the simplex.
 			Simplex simplex = new Simplex();
+#if ALLOWUNSAFE
 			fixed (SimplexCache* sPtr = &cache)
 			{
-				simplex.ReadCache(sPtr, shapeA, TransformA, shapeB, TransformB);
-			}	
+				simplex.ReadCache(sPtr, shapeA, transformA, shapeB, transformB);
+			}
+#else
+			simplex.ReadCache(cache, shapeA, transformA, shapeB, transformB);
+#endif
 
 			// Get simplex vertices as an array.
+#if ALLOWUNSAFE
 			SimplexVertex* vertices = &simplex._v1;
+#else
+			SimplexVertex[] vertices = new SimplexVertex[] { simplex._v1, simplex._v2, simplex._v3 };
+#endif 
 
 			// These store the vertices of the last simplex so that we
 			// can check for duplicates and prevent cycling.
+#if ALLOWUNSAFE
 			int* lastA = stackalloc int[4], lastB = stackalloc int[4];
+#else
+			int[] lastA = new int[4];
+			int[] lastB = new int[4];
+#endif // ALLOWUNSAFE
 			int lastCount;
 
 			// Main iteration loop.
@@ -545,19 +658,33 @@ namespace Box2DX.Collision
 				}
 
 				// Compute a tentative new simplex vertex using support points.
+#if ALLOWUNSAFE
 				SimplexVertex* vertex = vertices + simplex._count;
-				vertex->indexA = shapeA.GetSupport(TransformA.InverseTransformDirection(p));
-				vertex->wA = TransformA.TransformPoint(shapeA.GetVertex(vertex->indexA));
+				vertex->indexA = shapeA.GetSupport(transformA.InverseTransformDirection(p));
+				vertex->wA = transformA.TransformPoint(shapeA.GetVertex(vertex->indexA));
 				//Vec2 wBLocal;
-				vertex->indexB = shapeB.GetSupport(TransformB.InverseTransformDirection(-p));
-				vertex->wB = TransformB.TransformPoint(shapeB.GetVertex(vertex->indexB));
+				vertex->indexB = shapeB.GetSupport(transformB.InverseTransformDirection(-p));
+				vertex->wB = transformB.TransformPoint(shapeB.GetVertex(vertex->indexB));
 				vertex->w = vertex->wB - vertex->wA;
+#else
+				SimplexVertex vertex = vertices[simplex._count - 1];
+				vertex.indexA = shapeA.GetSupport(transformA.InverseTransformDirection(p));
+				vertex.wA = transformA.TransformPoint(shapeA.GetVertex(vertex.indexA));
+				//Vec2 wBLocal;
+				vertex.indexB = shapeB.GetSupport(transformB.InverseTransformDirection(-p));
+				vertex.wB = transformB.TransformPoint(shapeB.GetVertex(vertex.indexB));
+				vertex.w = vertex.wB - vertex.wA;	
+#endif // ALLOWUNSAFE
 
 				// Iteration count is equated to the number of support point calls.
 				++iter;
 
 				// Check for convergence.
+#if ALLOWUNSAFE
 				float lowerBound = Vector2.Dot(p, vertex->w);
+#else
+				float lowerBound = Vector2.Dot(p, vertex.w);
+#endif
 				float upperBound = distanceSqr;
 				const float k_relativeTolSqr = 0.01f * 0.01f;	// 1:100
 				if (upperBound - lowerBound <= k_relativeTolSqr * upperBound)
@@ -570,7 +697,11 @@ namespace Box2DX.Collision
 				bool duplicate = false;
 				for (i = 0; i < lastCount; ++i)
 				{
+#if ALLOWUNSAFE
 					if (vertex->indexA == lastA[i] && vertex->indexB == lastB[i])
+#else
+					if (vertex.indexA == lastA[i] && vertex.indexB == lastB[i])
+#endif
 					{
 						duplicate = true;
 						break;
@@ -587,7 +718,8 @@ namespace Box2DX.Collision
 				++simplex._count;
 			}
 
-
+			
+#if ALLOWUNSAFE
 			fixed (DistanceOutput* doPtr = &output)
 			{
 				// Prepare output.
@@ -601,6 +733,15 @@ namespace Box2DX.Collision
 				// Cache the simplex.
 				simplex.WriteCache(sPtr);
 			}
+#else
+			// Prepare output.
+			simplex.GetWitnessPoints(out output.PointA, out output.PointB);
+			output.Distance = Vector2.Distance(output.PointA, output.PointB);
+			output.Iterations = iter;
+			
+			// Cache the simplex.
+			simplex.WriteCache(cache);
+#endif
 
 			// Apply radii if requested.
 			if (input.UseRadii)
